@@ -1,0 +1,5 @@
+tmp*
+*.o
+x.txt
+Apps/Load/build/
+Apps/Load/dist/
