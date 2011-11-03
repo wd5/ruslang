@@ -6,19 +6,17 @@
  */
 
 #include <cstdlib>
-// #include <locale>
+#include <locale>
 #include <iostream>
 #include <fstream>
 #include <list>
+#include <string>
 #include <set>
 #include <iterator>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-// #include "cyrillic\\codecvt_cp1251.hpp"
-// #include "cyrillic\\codecvt_cp866.hpp"
-#include "cyrillic\\russian_chars.hpp"
+#include "cyrillic//russian_chars.hpp"
 
 using namespace std;
 const char* inputAccentedWordsFileName = "d:\\dev\\RussianLanguage\\Data\\Collected\\RussianWords_AllForms_Accents_86xxxBases_cp1251.txt" ;
@@ -195,7 +193,55 @@ int main(int argc, char** argv)
 {
     char buffer[4096] ;
     long counter=0 ;
-  
+    
+    cout << "абвгдеёжзийклмн cout: печать встроенной строки без L: " << endl ;
+    printf ("абвгдеёжзийклмн printf: печать встроенной строки без L: " ) ;
+    hexing("абвгдеёжзийклмн hex: печать встроенной строки без L: ");
+    
+    const char strvar[]= "абвгдеёжзийклмн печать переменной типа char*: " ;
+    int sizevar = sizeof(strvar[0]) ;
+    
+    cout << strvar<< "; \n size=" <<sizevar<< endl ;
+    printf ("из printf:%s\n",strvar) ;
+    hexing(strvar);
+    cout << L"cout: встроенная строка с L в начале: абвгдеёжзийклмн"<< endl ;
+    
+    //const wchar_t* strw = "печать переменной типа wchar_t без L" ;
+    //cout << strw << endl ;
+    const wchar_t* strwl = L"печать переменной типа wchar_t c L: абвгдеёжзийклмн" ;
+    cout << strwl << endl ;
+    cout << string("печать типа стринг созданного из строки без L: абвгдеёжзийклмн") << endl ;
+    //cout << string(L"печать типа стринг созданного из строки с L") << endl ;
+    
+    {
+        cout << "before fopen" <<endl ;
+    FILE *tmpWfile= fopen ("tmpWords.txt","r");
+    if(tmpWfile==NULL)
+    {
+        cout << "Catasrophe" <<endl ;
+        exit(0) ;
+    }
+    char tmpLine[256] ;
+    int line = 0 ;
+    while(!feof(tmpWfile))
+    {
+        cout <<"while 1, line"<<++line<<endl ;
+        // fscanf(tmpWfile,"%s",tmpLine);
+        fgets(tmpLine,256,tmpWfile) ;
+        hexing(tmpLine) ;
+        cout << "while after fscanf" << endl ;
+        cout << "cout:" << tmpLine << endl ;
+        cout << "while after cout" << endl ;
+        printf("printf:%s\n", tmpLine) ;
+        cout << "while after printf" << endl ;
+    }
+    fclose(tmpWfile) ;
+    }
+ 
+    std::locale currentLocale (std::locale("") );
+    
+    
+    exit(0) ;
     FILE* fin = fopen(inputAccentedWordsFileName,"r") ;
     if(fin)
     {

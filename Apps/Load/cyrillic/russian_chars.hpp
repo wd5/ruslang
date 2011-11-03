@@ -152,6 +152,7 @@ const unsigned char SMALL_YA_866=0xEF;
 int strcmp_cp866( const char* str1, int len1, const char* str2, int len2) ;
 char* convert_str_cp1251_to_cp866(char* str866,const char* str1251, int len) ;
 char* convert_str_cp866_to_cp1251(char* str1251,const char* str866, int len) ;
+void hexing(const char* str) ;
 
 #endif	/* RUSSIAN_CHARS_HPP */
 

@@ -1,4 +1,5 @@
 #include "russian_chars.hpp"
+#include <stdio.h>
 
 bool isRussianChar_cp1251(unsigned char a)
 {
@@ -87,4 +88,12 @@ int strcmp_cp866( const char* str1, int len1, const char* str2, int len2)
 {
     // not implemented yet, 2011-10-08
     return 0 ;
+}
+
+void hexing(const char* str)
+{
+    for(int i=0;str[i];i++)
+    {
+        printf("%x ",(unsigned int)(unsigned char) str[i]) ;
+    }
 }
