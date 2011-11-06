@@ -82,14 +82,25 @@ void parseLine (const unsigned char* line)
                         wf->setAccent(newWordAccents[j]) ;
                     retValue = wordList.insert(*wf) ;
                     if(retValue.second==false)
-                    {   // such wordform already exists
+                    {   // such wordform already exists in SET
+                        FILE* duplicate=fopen("tmpDuplicated.txt","a") ;
+                        newWord[newWordLength]=0;
+                        fprintf(duplicate,". %s\n",newWord);
+                        fclose(duplicate) ;
                         delete wf ;
                     }
                     else
                     {    
-                        // No accent found
-                        if(newWordAccents[0]==0)
+                        // temp
                         {
+                            FILE* duplicate=fopen("tmpDuplicated.txt","a") ;
+                            newWord[newWordLength]=0;
+                            fprintf(duplicate,"* %s\n",newWord);
+                            fclose(duplicate) ;
+                        }
+                        // temp end
+                        if(newWordAccents[0]==0)
+                        {   // No accent found
                             FILE* noAccentFile = fopen("tmpNotAccentedWords.txt","a") ;
                             newWord[newWordLength]=0;
                             fprintf(noAccentFile,"%s\n",newWord); 
@@ -148,7 +159,23 @@ void parseLine (const unsigned char* line)
     for(int k=0;k<ACCENT_ARRAY_SIZE && newWordAccents[k];k++)
            wf->setAccent(newWordAccents[k]) ;
     retValue = wordList.insert(*wf) ;
-    if(retValue.second==false)  delete wf ;
+    if(retValue.second==false)  
+    {   // such wordform already exists in SET
+        FILE* duplicate=fopen("tmpDuplicated.txt","a") ;
+        newWord[newWordLength]=0;
+        fprintf(duplicate,"_ %s\n",newWord);
+        fclose(duplicate) ;
+        delete wf ;
+    }
+    // temp
+    else
+    {
+        FILE* duplicate=fopen("tmpDuplicated.txt","a") ;
+        newWord[newWordLength]=0;
+        fprintf(duplicate,"* %s\n",newWord);
+        fclose(duplicate) ;
+    }
+    // temp end
 }
 
 int main(int argc, char** argv) 

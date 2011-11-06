@@ -95,7 +95,7 @@ public:
 class comp_WordForm
 {
 public:
-    bool operator()(WordForm wf1, WordForm wf2) const
+    bool operator()(const WordForm& wf1, const WordForm& wf2) const
     { 
         // true if wf2 > wf1, false if wf2<=wf1
         int compareResult=strcmp_cp1251(wf1.word,wf1.length,wf2.word,wf2.length) ;
