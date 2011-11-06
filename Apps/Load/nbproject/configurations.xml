@@ -5,18 +5,20 @@
                    displayName="Исходные файлы "
                    projectFiles="true">
       <logicalFolder name="cyrillic" displayName="cyrillic" projectFiles="true">
-        <itemPath>cyrillic/codecvt_cp1251.hpp</itemPath>
-        <itemPath>cyrillic/codecvt_cp866.hpp</itemPath>
-        <itemPath>cyrillic/mbwcvt.hpp</itemPath>
-        <itemPath>cyrillic/russian_chars.hpp</itemPath>
+        <itemPath>convert.cpp</itemPath>
+        <itemPath>cyrillic/cp1251.cpp</itemPath>
         <itemPath>cyrillic/str_cp1251.cpp</itemPath>
       </logicalFolder>
-      <itemPath>convert.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="HeaderFiles"
                    displayName="Файлы заголовков"
                    projectFiles="true">
+      <itemPath>cyrillic/codecvt_cp1251.hpp</itemPath>
+      <itemPath>cyrillic/codecvt_cp866.hpp</itemPath>
+      <itemPath>cyrillic/cp1251.hpp</itemPath>
+      <itemPath>cyrillic/mbwcvt.hpp</itemPath>
+      <itemPath>cyrillic/russian_chars.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Файлы ресурсов"

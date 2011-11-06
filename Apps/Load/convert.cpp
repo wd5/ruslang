@@ -1,3 +1,10 @@
+/* 
+ * File:   convert.cpp
+ * Author: Ustas
+ *
+ * Created on 18 Сентябрь 2011 г., 13:00
+ */
+
 
 
 char _____sampleConvertTable[] = 
@@ -49,3 +56,5 @@ char* win2dos(const char*winString, char* dosString,int len)
     }
     return dosString ;
 }
+
+

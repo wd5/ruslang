@@ -16,10 +16,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cyrillic//russian_chars.hpp"
+#include "cyrillic/russian_chars.hpp"
+#include "cyrillic/cp1251.hpp"
 
 using namespace std;
-const char* inputAccentedWordsFileName = "d:\\dev\\RussianLanguage\\Data\\Collected\\RussianWords_AllForms_Accents_86xxxBases_cp1251.txt" ;
+const char* inputAccentedWordsFileName = "d:/dev/RussianLanguage/Data/Collected/RussianWords_AllForms_Accents_86xxxBases_cp1251.txt" ;
 const char* inputMissingWordsFileName = "d:\\dev\\RussianLanguage\\Data\\Collected\\RussianWords_AllForms_Accents_missing_cp1251.txt" ;
 const char* outputFileName = "d:\\dev\\RussianLanguage\\Data\\Created\\RussianWords_AllForms_Len_Accents_cp1251.txt" ;
 
@@ -33,15 +34,15 @@ void debug_break()
 class WordForm
 {
 private:
-    static char _string[512] ;
+    static unsigned char _string[512] ;
 public:
-    char* word ;
+    unsigned char* word ;
     int length ;
     int accent ;        // 0 - unknown, some info is missing, some words have no vocals
-    WordForm(const char* str)
+    WordForm(const unsigned char* str)
     {
-        int len=strlen(str); 
-        word=(char*)malloc(sizeof(char)*len) ;
+        int len=strlen((const char*) str); 
+        word=(unsigned char*)malloc(sizeof(unsigned char)*len) ;
         memcpy(word, str,len) ;
         length=len ;
         accent=0;
@@ -50,12 +51,12 @@ public:
     {
         length=wf.length ;
         accent=wf.accent ;
-        word=(char*)malloc(sizeof(char)*length) ;
+        word=(unsigned char*)malloc(sizeof(unsigned char)*length) ;
         memcpy(word, wf.word,length) ;
     }
-    WordForm(const char* str,int len)
+    WordForm(const unsigned char* str,int len)
     {
-        word=(char*)malloc(sizeof(char)*len) ;
+        word=(unsigned char*)malloc(sizeof(unsigned char)*len) ;
         memcpy(word,str,len) ;
         length=len ;
         accent=0 ;
@@ -71,24 +72,30 @@ public:
     {
         accent=accentPosition ;
     }
-    const char* str()
+    const unsigned char* str()
     {
         memcpy(_string,word,length) ;
         _string[length]=0 ;
         return _string ;
     }
-    const char* wstr()
+    unsigned char* str(unsigned char* s) const
+    {
+        memcpy(s,word,length) ;
+        s[length]=0 ;
+        return s ;
+    }
+    const unsigned char* wstr()
     {
         memcpy(_string,word,length) ;
         _string[length]=0 ;
         return _string ;
     }
-    const char* str_cp866()
+    const unsigned char* str_cp866()
     {
         return convert_str_cp1251_to_cp866(_string,word,length) ;
     }
 };
-char WordForm::_string[512] ;
+unsigned char WordForm::_string[512] ;
 
 class comp_WordForm
 {
@@ -105,14 +112,15 @@ public:
         if (compareResult<0) return true ;
         return false ; 
     }
+
 };
 
 // list<WordForm> wordList ;
 set <WordForm,comp_WordForm> wordList ;
-void parseLine (const char* line)
+void parseLine (const unsigned char* line)
 {
     enum {skippingHead,collectingWords} status=skippingHead ;
-    char newWord[256] ;
+    unsigned char newWord[256] ;
     int newWordLength=0;
     int newWordAccentPosition=0 ;
     pair< set<WordForm,comp_WordForm>::iterator, bool> retValue ;
@@ -151,10 +159,10 @@ void parseLine (const char* line)
 //      Detecting words without accents
                         // cout << "word added " << wf->str_cp866() << endl ;
                         // printf("word added %x\n",(int)(unsigned char)wf->str_cp866()[0]) ;
-                        wchar_t xx[10] = {0x1004,0x1104,0x1204,0};
+                        //wchar_t xx[10] = {0x1004,0x1104,0x1204,0};
                         // printf("word added %s\n",xx) ;
-                        cout << "word added " << xx[0] << endl ;
-                        debug_break() ;
+                        //cout << "word added " << xx[0] << endl ;
+                        // debug_break() ;
                         if(newWordAccentPosition==0)
                         {
                             FILE* noAccentFile = fopen("tmpNotAccentedWords.txt","a") ;
@@ -189,22 +197,16 @@ void parseLine (const char* line)
     if(retValue.second==false)  delete wf ;
 }
 
+cp1251 console ;
+
+
+
 int main(int argc, char** argv) 
 {
-
-    locale def ;
-    cout << "Default locale: " << def.name() << endl ;
-    locale current = cout.getloc() ;
-    cout << "cout locale: " << current.name() << endl ;
-    cout.imbue(locale("russian")) ;
-    current = cout.getloc() ;
-    cout << "cout en locale: " << current.name() << endl ;
-    
-    exit(0) ;
-    
-    char buffer[4096] ;
+    unsigned char buffer[4096] ;
     long counter=0 ;
-    FILE* fin = fopen(inputAccentedWordsFileName,"r") ;
+    FILE* fin ;
+    fin = fopen(inputAccentedWordsFileName,"r") ;
     if(fin)
     {
         while(fgets(buffer,4096,fin))
@@ -220,7 +222,7 @@ int main(int argc, char** argv)
     fin = fopen(inputMissingWordsFileName,"r") ;
     if(fin)
     {
-        while(fgets(buffer,4096,fin))
+        while(fgets((char*)buffer,4096,fin))
         {
             parseLine(buffer) ;
             counter++; 
@@ -230,14 +232,19 @@ int main(int argc, char** argv)
     }
     cout << "List size [2]: " << wordList.size() << endl ;
     
-    FILE* fout=fopen(outputFileName,"w") ;
+    FILE* fout;
+    fout=fopen(outputFileName,"w") ;
     set<WordForm, comp_WordForm>::iterator wi ;
     for(wi=wordList.begin();wi!=wordList.end();wi++)
     {
-        char tmpStr[256] ;
-        memcpy(tmpStr,wi->word,wi->length) ;
-        tmpStr[wi->length]='\0' ;
+        unsigned char tmpStr[256] ;
+        wi->str(tmpStr) ;
         fprintf(fout,"%s;%d;%d\n",tmpStr,wi->length,wi->accent);
+        
+//        // printing to console to check
+//        unsigned char tmpStrConsole[512] ;
+//        console.convert(tmpStr,wi->length,tmpStrConsole,512) ;
+//        printf ("Console Word: %s\n",tmpStrConsole) ;
     }
     fclose(fout);
  

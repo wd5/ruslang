@@ -34,7 +34,7 @@ int charcmp_cp1251(unsigned char a, unsigned char b)
     else    return -1;
 }
 
-int strcmp_cp1251( const char* str1, int len1, const char* str2, int len2)
+int strcmp_cp1251( const unsigned char* str1, int len1, const unsigned char* str2, int len2)
 {
     int i=0 ;
     int compareResult=0 ;
@@ -50,7 +50,7 @@ int strcmp_cp1251( const char* str1, int len1, const char* str2, int len2)
     return compareResult ;
 }
 
-char convert_char_cp1251_to_cp866( unsigned char c)
+unsigned char convert_char_cp1251_to_cp866( unsigned char c)
 {
     if(CAPITAL_A_1251<=c && c<=SMALL_PE_1251) c-=0x40 ;
     else if(SMALL_ER_1251<=c && c<=SMALL_YA_1251) c-=010 ;
@@ -58,7 +58,7 @@ char convert_char_cp1251_to_cp866( unsigned char c)
     else if(c==SMALL_YO_1251) c=SMALL_YO_866 ;
     return c ;
 }
-char convert_char_cp866_to_cp1251( unsigned char c)
+unsigned char convert_char_cp866_to_cp1251( unsigned char c)
 {
     if(CAPITAL_A_866<=c && c<=SMALL_PE_866) c+=0x40 ;
     else if(SMALL_ER_866<=c && c<=SMALL_YA_866) c+=010 ;
@@ -66,7 +66,7 @@ char convert_char_cp866_to_cp1251( unsigned char c)
     else if(c==SMALL_YO_866) c=SMALL_YO_1251 ;
     return c ;
 }
-char* convert_str_cp1251_to_cp866(char* str866,const char* str1251, int len)
+unsigned char* convert_str_cp1251_to_cp866(unsigned char* str866,const unsigned char* str1251, int len)
 {
     for(int i=0;i<len;i++)
     {
@@ -75,7 +75,7 @@ char* convert_str_cp1251_to_cp866(char* str866,const char* str1251, int len)
     return str866 ;
 }
 
-char* convert_str_cp866_to_cp1251(char* str1251,const char* str866, int len)
+unsigned char* convert_str_cp866_to_cp1251(unsigned char* str1251,const unsigned char* str866, int len)
 {
     for(int i=0;i<len;i++)
     {
@@ -84,16 +84,16 @@ char* convert_str_cp866_to_cp1251(char* str1251,const char* str866, int len)
     return str1251 ;
 }
 
-int strcmp_cp866( const char* str1, int len1, const char* str2, int len2) 
+int strcmp_cp866( const unsigned char* str1, int len1, const unsigned char* str2, int len2) 
 {
     // not implemented yet, 2011-10-08
     return 0 ;
 }
 
-void hexing(const char* str)
+void hexing(const unsigned char* str)
 {
     for(int i=0;str[i];i++)
     {
-        printf("%x ",(unsigned int)(unsigned char) str[i]) ;
+        printf("%x ",(unsigned int) str[i]) ;
     }
 }

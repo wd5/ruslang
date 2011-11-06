@@ -34,6 +34,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/cyrillic/cp1251.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/cyrillic/str_cp1251.o \
 	${OBJECTDIR}/convert.o
@@ -62,6 +63,11 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/cyrillic/cp1251.o: cyrillic/cp1251.cpp 
+	${MKDIR} -p ${OBJECTDIR}/cyrillic
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/cyrillic/cp1251.o cyrillic/cp1251.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
