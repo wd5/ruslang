@@ -217,5 +217,6 @@ int main(int argc, char** argv)
  
     clock_t endtime = clock() ;
     printf("Execution time: %d sec\n", (endtime-starttime)/CLOCKS_PER_SEC) ;
+    // printf("Execution time in strcmp: %d sec\n", totalTimeInStrCmp/CLOCKS_PER_SEC) ;
     return 0;
 }

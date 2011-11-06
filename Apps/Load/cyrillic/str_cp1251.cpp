@@ -34,8 +34,11 @@ int charcmp_cp1251(unsigned char a, unsigned char b)
     else    return -1;
 }
 
+clock_t totalTimeInStrCmp=0 ;
 int strcmp_cp1251( const unsigned char* str1, int len1, const unsigned char* str2, int len2)
 {
+    //clock_t starttime=clock() ;
+    
     int i=0 ;
     int compareResult=0 ;
     for(i=0;i<len1 && i<len2;i++)
@@ -47,6 +50,7 @@ int strcmp_cp1251( const unsigned char* str1, int len1, const unsigned char* str
         if(len1>len2) compareResult=1 ;
         else if(len1<len2) compareResult=-1 ;
     }
+    //totalTimeInStrCmp += clock() - starttime ;
     return compareResult ;
 }
 
