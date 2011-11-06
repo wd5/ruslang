@@ -36,7 +36,9 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/cyrillic/cp1251.o \
 	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/misctools.o \
 	${OBJECTDIR}/cyrillic/str_cp1251.o \
+	${OBJECTDIR}/wordform.o \
 	${OBJECTDIR}/convert.o
 
 
@@ -74,10 +76,20 @@ ${OBJECTDIR}/main.o: main.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
+${OBJECTDIR}/misctools.o: misctools.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/misctools.o misctools.cpp
+
 ${OBJECTDIR}/cyrillic/str_cp1251.o: cyrillic/str_cp1251.cpp 
 	${MKDIR} -p ${OBJECTDIR}/cyrillic
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/cyrillic/str_cp1251.o cyrillic/str_cp1251.cpp
+
+${OBJECTDIR}/wordform.o: wordform.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/wordform.o wordform.cpp
 
 ${OBJECTDIR}/convert.o: convert.cpp 
 	${MKDIR} -p ${OBJECTDIR}

@@ -18,121 +18,53 @@
 #include <string.h>
 #include "cyrillic/russian_chars.hpp"
 #include "cyrillic/cp1251.hpp"
+#include "misctools.h"
+#include "wordform.hpp"
 
 using namespace std;
 const char* inputAccentedWordsFileName = "d:/dev/RussianLanguage/Data/Collected/RussianWords_AllForms_Accents_86xxxBases_cp1251.txt" ;
-const char* inputMissingWordsFileName = "d:\\dev\\RussianLanguage\\Data\\Collected\\RussianWords_AllForms_Accents_missing_cp1251.txt" ;
-const char* outputFileName = "d:\\dev\\RussianLanguage\\Data\\Created\\RussianWords_AllForms_Len_Accents_cp1251.txt" ;
+const char* inputMissingWordsFileName = "d:/dev/RussianLanguage/Data/Collected/RussianWords_AllForms_Accents_missing_cp1251.txt" ;
+const char* outputFileName = "d:/dev/RussianLanguage/Data/Created/RussianWords_AllForms_Len_Accents_cp1251.txt" ;
 
-static long debug_interrupt_counter=0;
-const long exit_treshold=40 ;
-void debug_break()
-{
-    if(exit_treshold >0 && ++debug_interrupt_counter>=exit_treshold) exit(0) ;
-}
-
-class WordForm
-{
-private:
-    static unsigned char _string[512] ;
-public:
-    unsigned char* word ;
-    int length ;
-    int accent ;        // 0 - unknown, some info is missing, some words have no vocals
-    WordForm(const unsigned char* str)
-    {
-        int len=strlen((const char*) str); 
-        word=(unsigned char*)malloc(sizeof(unsigned char)*len) ;
-        memcpy(word, str,len) ;
-        length=len ;
-        accent=0;
-    }
-    WordForm(const WordForm& wf)
-    {
-        length=wf.length ;
-        accent=wf.accent ;
-        word=(unsigned char*)malloc(sizeof(unsigned char)*length) ;
-        memcpy(word, wf.word,length) ;
-    }
-    WordForm(const unsigned char* str,int len)
-    {
-        word=(unsigned char*)malloc(sizeof(unsigned char)*len) ;
-        memcpy(word,str,len) ;
-        length=len ;
-        accent=0 ;
-    }
-    ~WordForm()
-    {
-        free(word);
-        word=0 ;
-        length=0 ;
-        accent=0;
-    }
-    void setAccent(int accentPosition)
-    {
-        accent=accentPosition ;
-    }
-    const unsigned char* str()
-    {
-        memcpy(_string,word,length) ;
-        _string[length]=0 ;
-        return _string ;
-    }
-    unsigned char* str(unsigned char* s) const
-    {
-        memcpy(s,word,length) ;
-        s[length]=0 ;
-        return s ;
-    }
-    const unsigned char* wstr()
-    {
-        memcpy(_string,word,length) ;
-        _string[length]=0 ;
-        return _string ;
-    }
-    const unsigned char* str_cp866()
-    {
-        return convert_str_cp1251_to_cp866(_string,word,length) ;
-    }
-};
-unsigned char WordForm::_string[512] ;
-
-class comp_WordForm
-{
-public:
-    bool operator()(WordForm wf1, WordForm wf2) const
-    { 
-        // true if wf2 > wf1, false if wf2<=wf1
-        int compareResult=strcmp_cp1251(wf1.word,wf1.length,wf2.word,wf2.length) ;
-        if(compareResult==0)
-        {
-            if(wf1.accent>wf2.accent) compareResult=1 ;
-            else if(wf1.accent<wf2.accent) compareResult=-1 ;
-        }
-        if (compareResult<0) return true ;
-        return false ; 
-    }
-
-};
-
-// list<WordForm> wordList ;
 set <WordForm,comp_WordForm> wordList ;
+cp1251 console ;
+
+/*
+ * parseLine parses line from files of this format:
+ * mainform#form1,form2,form3,...
+ * any formX can have one or multiple chars ' or ` as positions of accents in the word
+ * files of this format are:
+ * - RussianWords_AllForms_Accents_86xxxBases_cp1251.txt
+ * - RussianWords_AllForms_Accents_missing_cp1251.txt
+ */
+
+
 void parseLine (const unsigned char* line)
 {
     enum {skippingHead,collectingWords} status=skippingHead ;
     unsigned char newWord[256] ;
     int newWordLength=0;
-    int newWordAccentPosition=0 ;
+    bool lastCharYO=false ;
+    
+    int newWordAccents[ACCENT_ARRAY_SIZE] ;
+    int newWordAccentIndex=0;
+    for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
+        newWordAccents[newWordAccentIndex]=0;
+    newWordAccentIndex=0 ;
+    
     pair< set<WordForm,comp_WordForm>::iterator, bool> retValue ;
     for(int i=0;line[i]&&line[i]!='\r'&&line[i]!='\n';i++)
     {
         if(status==skippingHead)
         {
+            lastCharYO=false ;
             if(line[i]=='#')
             {
                 status=collectingWords;
                 newWordLength=0;
-                newWordAccentPosition=0 ;
+                for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
+                    newWordAccents[newWordAccentIndex]=0;
+                newWordAccentIndex=0 ;
             }
             else continue ;
         }
@@ -141,18 +73,16 @@ void parseLine (const unsigned char* line)
             if(line[i]==',')
             {
                 if(newWord[0]=='-')
-                {
-                    ;
-                }
+                {;}
                 else
                 {    
                     WordForm *wf = new WordForm(newWord,newWordLength) ;
-                    wf->setAccent(newWordAccentPosition) ;
+                    for(int j=0;j<ACCENT_ARRAY_SIZE && newWordAccents[j];j++)
+                        wf->setAccent(newWordAccents[j]) ;
                     retValue = wordList.insert(*wf) ;
                     if(retValue.second==false)
-                    {
+                    {   // such wordform already exists
                         delete wf ;
-                        // cout <<"oops"<<endl ;
                     }
                     else
                     {    
@@ -163,7 +93,7 @@ void parseLine (const unsigned char* line)
                         // printf("word added %s\n",xx) ;
                         //cout << "word added " << xx[0] << endl ;
                         // debug_break() ;
-                        if(newWordAccentPosition==0)
+                        if(newWordAccents[0]==0)
                         {
                             FILE* noAccentFile = fopen("tmpNotAccentedWords.txt","a") ;
                             newWord[newWordLength]=0;
@@ -172,32 +102,61 @@ void parseLine (const unsigned char* line)
                         }
                     }
                 }
-                newWordAccentPosition=0;
+                
+                for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
+                    newWordAccents[newWordAccentIndex]=0;
+                newWordAccentIndex=0 ;
+                lastCharYO=false ;
                 newWordLength=0;
             }
             else if(line[i]=='\'' || line[i]=='`')
             {
-                if (newWordAccentPosition==0)
-                 newWordAccentPosition=newWordLength ;
+                if(lastCharYO==true) continue ; // avoid double accent
+     
+                lastCharYO=false ;
+                if (newWordAccentIndex<ACCENT_ARRAY_SIZE)
+                        newWordAccents[newWordAccentIndex++]=newWordLength ;
+                else
+                {
+                    printf("a word found with number of accents greater than %d\n", ACCENT_ARRAY_SIZE) ;
+                    printf("line is below:\n") ;
+                    unsigned char tmpStr[1024] ;
+                    console.convert(line,strlen((const char*)line),tmpStr,1024) ;
+                    printf("%s", tmpStr) ;
+                    exit(0) ;
+                }    
             }
-            else if(((unsigned char)line[i])==SMALL_YO_1251) // small Russian YO
+            else if(((unsigned char)line[i])==SMALL_YO_1251 || ((unsigned char)line[i])==CAPITAL_YO_1251) //  Russian YO
             {
-                newWordAccentPosition=newWordLength+1 ;
+                if (newWordAccentIndex<ACCENT_ARRAY_SIZE)
+                        newWordAccents[newWordAccentIndex++]=newWordLength+1  ;
+                else
+                {
+                    printf("a word found with number of accents greater than %d\n", ACCENT_ARRAY_SIZE) ;
+                    printf("line is below:\n") ;
+                    unsigned char tmpStr[1024] ;
+                    console.convert(line,strlen((const char*)line),tmpStr,1024) ;
+                    printf("%s", tmpStr) ;
+                    exit(0) ;
+                } 
                 newWord[newWordLength++]=line[i] ;
+                lastCharYO=true ;
             }
             else
             {
                 newWord[newWordLength++]=line[i] ;
+                lastCharYO=false ;
             }
         }
     }
     WordForm *wf = new WordForm(newWord,newWordLength) ;
-    wf->setAccent(newWordAccentPosition) ;
+    for(int k=0;k<ACCENT_ARRAY_SIZE && newWordAccents[k];k++)
+           wf->setAccent(newWordAccents[k]) ;
     retValue = wordList.insert(*wf) ;
     if(retValue.second==false)  delete wf ;
 }
 
-cp1251 console ;
+
 
 
 
@@ -209,28 +168,33 @@ int main(int argc, char** argv)
     fin = fopen(inputAccentedWordsFileName,"r") ;
     if(fin)
     {
-        while(fgets(buffer,4096,fin))
-        {
-            parseLine(buffer) ;
-            counter++; 
-        }
-        cout <<"Counter [1]:"<<counter<<endl ;
-        fclose(fin) ;
-    }
-    cout << "List size [1]: " << wordList.size() << endl ;
-    
-    fin = fopen(inputMissingWordsFileName,"r") ;
-    if(fin)
-    {
+        cout << "Reading file: " << inputAccentedWordsFileName << endl ;
         while(fgets((char*)buffer,4096,fin))
         {
             parseLine(buffer) ;
             counter++; 
         }
-        cout <<"Counter [2]:"<<counter<<endl ;
+        
+        cout <<"Lines read: "<<counter<<endl ;
         fclose(fin) ;
     }
-    cout << "List size [2]: " << wordList.size() << endl ;
+    cout << "Word forms added: " << wordList.size() << endl ;
+    
+    fin = fopen(inputMissingWordsFileName,"r") ;
+    counter=0 ;
+    if(fin)
+    {
+        cout << "Reading file: " << inputMissingWordsFileName << endl ;
+        while(fgets((char*)buffer,4096,fin))
+        {
+            parseLine(buffer) ;
+            counter++; 
+        }
+
+        cout <<"Lines read: "<<counter<<endl ;
+        fclose(fin) ;
+    }
+    cout << "Total word forms added: " << wordList.size() << endl ;
     
     FILE* fout;
     fout=fopen(outputFileName,"w") ;
@@ -239,8 +203,19 @@ int main(int argc, char** argv)
     {
         unsigned char tmpStr[256] ;
         wi->str(tmpStr) ;
-        fprintf(fout,"%s;%d;%d\n",tmpStr,wi->length,wi->accent);
-        
+        fprintf(fout,"%s;%d;",tmpStr,wi->length);
+        if(wi->accent[0]==0)
+            fprintf(fout,"0");
+        else
+            for(int i=0;i<ACCENT_ARRAY_SIZE;i++)
+            {
+                if(wi->accent[i]>0)
+                {
+                    if(i>0) fprintf(fout,",") ;
+                    fprintf(fout,"%d", wi->accent[i]);
+                }
+            }
+        fprintf (fout,"\n") ;
 //        // printing to console to check
 //        unsigned char tmpStrConsole[512] ;
 //        console.convert(tmpStr,wi->length,tmpStrConsole,512) ;
