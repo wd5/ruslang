@@ -3,7 +3,7 @@
 
 bool isRussianChar_cp1251(unsigned char a)
 {
-    if(a==CAPITAL_YO_1251 || a==SMALL_YO_1251 || (CAPITAL_A_1251 <= a && a <= SMALL_YA_1251))
+    if((CAPITAL_A_1251 <= a && a <= SMALL_YA_1251) || a==CAPITAL_YO_1251 || a==SMALL_YO_1251 )
         return true ;
     else
         return false ;
@@ -40,7 +40,7 @@ int strcmp_cp1251( const unsigned char* str1, int len1, const unsigned char* str
     int compareResult=0 ;
     for(i=0;i<len1 && i<len2;i++)
     {
-        if( (compareResult=charcmp_cp1251((unsigned char)str1[i],(unsigned char)str2[i]))==0 ) continue ;
+        if( (compareResult=charcmp_cp1251(str1[i],str2[i]))==0 ) continue ;
     }
     if(compareResult==0)
     {

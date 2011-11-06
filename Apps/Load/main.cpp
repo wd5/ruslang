@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "cyrillic/russian_chars.hpp"
 #include "cyrillic/cp1251.hpp"
 #include "misctools.h"
@@ -86,13 +87,7 @@ void parseLine (const unsigned char* line)
                     }
                     else
                     {    
-//      Detecting words without accents
-                        // cout << "word added " << wf->str_cp866() << endl ;
-                        // printf("word added %x\n",(int)(unsigned char)wf->str_cp866()[0]) ;
-                        //wchar_t xx[10] = {0x1004,0x1104,0x1204,0};
-                        // printf("word added %s\n",xx) ;
-                        //cout << "word added " << xx[0] << endl ;
-                        // debug_break() ;
+                        // No accent found
                         if(newWordAccents[0]==0)
                         {
                             FILE* noAccentFile = fopen("tmpNotAccentedWords.txt","a") ;
@@ -156,12 +151,9 @@ void parseLine (const unsigned char* line)
     if(retValue.second==false)  delete wf ;
 }
 
-
-
-
-
 int main(int argc, char** argv) 
 {
+    clock_t starttime=clock() ;
     unsigned char buffer[4096] ;
     long counter=0 ;
     FILE* fin ;
@@ -223,5 +215,7 @@ int main(int argc, char** argv)
     }
     fclose(fout);
  
+    clock_t endtime = clock() ;
+    printf("Execution time: %d sec\n", (endtime-starttime)/CLOCKS_PER_SEC) ;
     return 0;
 }
