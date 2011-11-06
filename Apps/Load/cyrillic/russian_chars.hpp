@@ -8,6 +8,8 @@
 #ifndef RUSSIAN_CHARS_HPP
 #define	RUSSIAN_CHARS_HPP
 
+#include <time.h>
+
 const unsigned char CAPITAL_A_1251=0xC0;
 const unsigned char CAPITAL_BE_1251=0xC1;
 const unsigned char CAPITAL_WE_1251=0xC2;
@@ -153,6 +155,7 @@ int strcmp_cp866( const unsigned char* str1, int len1, const unsigned char* str2
 unsigned char* convert_str_cp1251_to_cp866(unsigned char* str866,const unsigned char* str1251, int len) ;
 unsigned char* convert_str_cp866_to_cp1251(unsigned char* str1251,const unsigned char* str866, int len) ;
 void hexing(const unsigned char* str) ;
+extern clock_t totalTimeInStrCmp ;
 
 #endif	/* RUSSIAN_CHARS_HPP */
 
