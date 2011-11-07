@@ -89,36 +89,37 @@ public:
     {
         return convert_str_cp1251_to_cp866(_string,word,length) ;
     }
+    bool operator==(const WordForm& wf) const ;
+    bool operator<(const WordForm& wf) const ;
+    WordForm& operator=(const WordForm& wf) 
+    {
+        free(word) ;
+        length=wf.length ;
+        resetAccent();
+        for(int i=0;i<ACCENT_ARRAY_SIZE;i++)
+                accent[i]=wf.accent[i] ;
+        word=(unsigned char*)malloc(sizeof(unsigned char)*length) ;
+        memcpy(word, wf.word,length) ;
+        return *this ;
+    }
+    void reset( const unsigned char* str,int len, short acct[] )
+    {
+        free(word) ;
+        word=(unsigned char*)malloc(sizeof(unsigned char)*len) ;
+        memcpy(word,str,len) ;
+        length=len ;
+        resetAccent();
+        for(int i=0;i<ACCENT_ARRAY_SIZE;i++)
+            accent[i]=acct[i] ;
+    }
+    
 };
 
 
 class comp_WordForm
 {
 public:
-    bool operator()(const WordForm& wf1, const WordForm& wf2) const
-    { 
-        // true if wf2 > wf1, false if wf2<=wf1
-        int compareResult=strcmp_cp1251(wf1.word,wf1.length,wf2.word,wf2.length) ;
-        if(compareResult==0)
-        {
-            for(int i=0;i<ACCENT_ARRAY_SIZE;i++)
-            {
-                if(wf1.accent[i]>wf2.accent[i]) 
-                {
-                    compareResult=1 ;
-                    break ;
-                }
-                else if(wf1.accent[i]<wf2.accent[i])
-                {
-                    compareResult=-1 ;
-                    break;
-                }
-            }
-        }
-        if (compareResult<0) return true ;
-        return false ; 
-    }
-
+    bool operator()(const WordForm& wf1, const WordForm& wf2) const ;
 };
 
 
