@@ -27,8 +27,8 @@ const char* inputAccentedWordsFileName = "d:/dev/RussianLanguage/Data/Collected/
 const char* inputMissingWordsFileName = "d:/dev/RussianLanguage/Data/Collected/RussianWords_AllForms_Accents_missing_cp1251.txt" ;
 const char* outputFileName = "d:/dev/RussianLanguage/Data/Created/RussianWords_AllForms_Len_Accents_cp1251.txt" ;
 
-set <WordForm,comp_WordForm> wordList ;
-// set <WordForm> wordList ; // WordForm operators == and < exist
+// set <WordForm,comp_WordForm> wordList ;
+set <WordForm> wordList ; // WordForm operators == and < exist
 cp1251 console ;
 
 /*
@@ -41,10 +41,10 @@ cp1251 console ;
  */
 
 
-void parseLine (const unsigned char* line)
+void parseLine (const char* line)
 {
     enum {skippingHead,collectingWords} status=skippingHead ;
-    unsigned char newWord[256] ;
+    char newWord[256] ;
     int newWordLength=0;
     bool lastCharYO=false ;
     
@@ -54,9 +54,10 @@ void parseLine (const unsigned char* line)
         newWordAccents[newWordAccentIndex]=0;
     newWordAccentIndex=0 ;
     
-    pair< set<WordForm,comp_WordForm>::iterator, bool> retValue ;
+    // pair< set<WordForm,comp_WordForm>::iterator, bool> retValue ;
+    pair< set<WordForm>::iterator, bool> retValue ;
     
-    WordForm wf ((const unsigned char*)"",0);
+    WordForm wf ("",0);
     for(int i=0;line[i]&&line[i]!='\r'&&line[i]!='\n';i++)
     {
         if(status==skippingHead)
@@ -126,11 +127,11 @@ void parseLine (const unsigned char* line)
                         newWordAccents[newWordAccentIndex++]=newWordLength ;
                 else
                 {
-                    printf("a word found with number of accents greater than %d\n", ACCENT_ARRAY_SIZE) ;
-                    printf("line is below:\n") ;
-                    unsigned char tmpStr[1024] ;
-                    console.convert(line,strlen((const char*)line),tmpStr,1024) ;
-                    printf("%s", tmpStr) ;
+                    cout << "a word found with number of accents greater than " << ACCENT_ARRAY_SIZE << endl ;
+                    cout << "line is below:" <<endl ;
+                    char tmpStr[1024] ;
+                    console.convert(line,strlen(line),tmpStr,1024) ;
+                    cout << tmpStr << endl ;
                     exit(0) ;
                 }    
             }
@@ -140,11 +141,11 @@ void parseLine (const unsigned char* line)
                         newWordAccents[newWordAccentIndex++]=newWordLength+1  ;
                 else
                 {
-                    printf("a word found with number of accents greater than %d\n", ACCENT_ARRAY_SIZE) ;
-                    printf("line is below:\n") ;
-                    unsigned char tmpStr[1024] ;
-                    console.convert(line,strlen((const char*)line),tmpStr,1024) ;
-                    printf("%s", tmpStr) ;
+                    cout << "a word found with number of accents greater than " << ACCENT_ARRAY_SIZE << endl ;
+                    cout << "line is below:" <<endl ;
+                    char tmpStr[1024] ;
+                    console.convert(line,strlen(line),tmpStr,1024) ;
+                    cout << tmpStr << endl ;
                     exit(0) ;
                 } 
                 newWord[newWordLength++]=line[i] ;
@@ -182,7 +183,7 @@ void parseLine (const unsigned char* line)
 int main(int argc, char** argv) 
 {
     clock_t starttime=clock() ;
-    unsigned char buffer[4096] ;
+    char buffer[4096] ;
     long counter=0 ;
     FILE* fin ;
     fin = fopen(inputAccentedWordsFileName,"r") ;
@@ -218,10 +219,11 @@ int main(int argc, char** argv)
     
     FILE* fout;
     fout=fopen(outputFileName,"w") ;
-    set<WordForm, comp_WordForm>::iterator wi ;
+    // set<WordForm, comp_WordForm>::iterator wi ;
+    set<WordForm>::iterator wi ;
     for(wi=wordList.begin();wi!=wordList.end();wi++)
     {
-        unsigned char tmpStr[256] ;
+        char tmpStr[256] ;
         wi->str(tmpStr) ;
         fprintf(fout,"%s;%d;",tmpStr,wi->length);
         if(wi->accent[0]==0)
@@ -244,7 +246,6 @@ int main(int argc, char** argv)
     fclose(fout);
  
     clock_t endtime = clock() ;
-    printf("Execution time: %d sec\n", (endtime-starttime)/CLOCKS_PER_SEC) ;
-    // printf("Execution time in strcmp: %d sec\n", totalTimeInStrCmp/CLOCKS_PER_SEC) ;
+    cout << "Execution time: " << (endtime-starttime)/CLOCKS_PER_SEC << "sec" << endl;
     return 0;
 }

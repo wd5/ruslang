@@ -15,7 +15,7 @@ class cp1251      // CodePage cp1251 manipulator
 {
 public:
     cp1251() {init();};
-    unsigned char* convert( const unsigned char* cp1251_in, int in_size, unsigned char* mbutf8_out, int out_size) ; // maxlength = size of mbutf8 in bytes
+     char* convert( const  char* cp1251_in, int in_size,  char* mbutf8_out, int out_size) ; // maxlength = size of mbutf8 in bytes
     static bool is_ru(unsigned char ch) ;
     static bool is_space(unsigned char ch) ;
     static bool is_capital(unsigned char ch) ;

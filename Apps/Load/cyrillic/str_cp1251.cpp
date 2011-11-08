@@ -22,8 +22,9 @@ unsigned char sorting1251[] =
 
 } ;
 
-bool isRussianChar_cp1251(unsigned char a)
+bool isRussianChar_cp1251(char signeda)
 {
+    unsigned char a = (unsigned char)signeda ;
     if((CAPITAL_A_1251 <= a && a <= SMALL_YA_1251) || a==SMALL_YO_1251 || a==CAPITAL_YO_1251 )
         return true ;
     else
@@ -39,14 +40,16 @@ unsigned char shiftCodes_yo_cp1251(unsigned char c)
     // no shift for any char after SMALL_YO_1251: SMALL_ZHE_1251 and >
 }
 
-int charcmp_cp1251(unsigned char a, unsigned char b)
+int charcmp_cp1251(char signeda, char signedb)
 {
     // a>b => 1
     // a<b => -1
     // a == b => 0
+    unsigned char a=(unsigned char)signeda ;
+    unsigned char b=(unsigned char)signedb ;
     if(a==b) return 0 ;
 
-    if(isRussianChar_cp1251(a) && isRussianChar_cp1251(b))
+    if(isRussianChar_cp1251(signeda) && isRussianChar_cp1251(signedb))
     {
         a=shiftCodes_yo_cp1251(a) ;
         b=shiftCodes_yo_cp1251(b) ;
@@ -56,7 +59,7 @@ int charcmp_cp1251(unsigned char a, unsigned char b)
 }
 
 clock_t totalTimeInStrCmp=0 ;
-int strcmp_cp1251( const unsigned char* str1, int len1, const unsigned char* str2, int len2)
+int strcmp_cp1251( const char* str1, int len1, const char* str2, int len2)
 {
     //clock_t starttime=clock() ;
     
@@ -66,6 +69,7 @@ int strcmp_cp1251( const unsigned char* str1, int len1, const unsigned char* str
     {
         if( str1[i] == str2[i] ) continue ;
         compareResult=charcmp_cp1251(str1[i],str2[i]) ;
+        if(compareResult!=0) break ;
         // if( (compareResult=charcmp_cp1251(str1[i],str2[i]))==0 ) continue ;
     }
     if(compareResult==0)
@@ -94,7 +98,7 @@ unsigned char convert_char_cp866_to_cp1251( unsigned char c)
     else if(c==SMALL_YO_866) c=SMALL_YO_1251 ;
     return c ;
 }
-unsigned char* convert_str_cp1251_to_cp866(unsigned char* str866,const unsigned char* str1251, int len)
+ char* convert_str_cp1251_to_cp866(char* str866,const  char* str1251, int len)
 {
     for(int i=0;i<len;i++)
     {
@@ -103,7 +107,7 @@ unsigned char* convert_str_cp1251_to_cp866(unsigned char* str866,const unsigned 
     return str866 ;
 }
 
-unsigned char* convert_str_cp866_to_cp1251(unsigned char* str1251,const unsigned char* str866, int len)
+char* convert_str_cp866_to_cp1251(char* str1251,const char* str866, int len)
 {
     for(int i=0;i<len;i++)
     {
@@ -112,16 +116,16 @@ unsigned char* convert_str_cp866_to_cp1251(unsigned char* str1251,const unsigned
     return str1251 ;
 }
 
-int strcmp_cp866( const unsigned char* str1, int len1, const unsigned char* str2, int len2) 
+int strcmp_cp866( const char* str1, int len1, const char* str2, int len2) 
 {
     // not implemented yet, 2011-10-08
     return 0 ;
 }
 
-void hexing(const unsigned char* str)
+void hexing(const char* str)
 {
     for(int i=0;str[i];i++)
     {
-        printf("%x ",(unsigned int) str[i]) ;
+        printf("%x ",(unsigned int) (unsigned char) str[i]) ;
     }
 }
