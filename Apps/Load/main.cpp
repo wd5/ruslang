@@ -9,6 +9,7 @@
 #include <locale>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <list>
 #include <string>
 #include <set>
@@ -40,7 +41,7 @@ cp1251 console ;
  * - RussianWords_AllForms_Accents_missing_cp1251.txt
  */
 
-
+unsigned long _ID_counter=1 ;
 void parseLine (const char* line)
 {
     enum {skippingHead,collectingWords} status=skippingHead ;
@@ -53,12 +54,10 @@ void parseLine (const char* line)
     for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
         newWordAccents[newWordAccentIndex]=0;
     newWordAccentIndex=0 ;
-    FILE* duplicate=fopen("tmpDuplicated.txt","a") ;
     
-    // pair< set<WordForm,comp_WordForm>::iterator, bool> retValue ;
     pair< set<WordForm>::iterator, bool> retValue ;
-    
     WordForm wf ("",0);
+    
     for(int i=0;line[i]!='\r'&&line[i]!='\n'&&line[i]!='\0';i++)
     {
         if(status==collectingWords)
@@ -70,20 +69,15 @@ void parseLine (const char* line)
                 else
                 {    
                     wf.reset(newWord,newWordLength,newWordAccents) ;
+                    wf.id=_ID_counter ;
                     retValue = wordList.insert(wf) ;
                     if(retValue.second==false)
                     {   // such wordform already exists in SET
-//                        newWord[newWordLength]=0;
-//                        fprintf(duplicate,". %s\n",newWord);
+
                     }
                     else
                     {    
-                        // temp
-                        {
-//                            newWord[newWordLength]=0;
-//                            fprintf(duplicate,"* %s\n",newWord);
-                        }
-                        // temp end
+                        _ID_counter++ ;
                         if(newWordAccents[0]==0)
                         {   // No accent found
                             FILE* noAccentFile = fopen("tmpNotAccentedWords.txt","a") ;
@@ -92,7 +86,6 @@ void parseLine (const char* line)
                             fclose(noAccentFile) ;
                         }
                     }
-                    // delete wf ;
                 }
                 
                 for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
@@ -115,11 +108,10 @@ void parseLine (const char* line)
                     char tmpStr[1024] ;
                     console.convert(line,strlen(line),tmpStr,1024) ;
                     cout << tmpStr << endl ;
-                    fclose(duplicate) ;
                     exit(0) ;
                 }    
             }
-            else if(((unsigned char)line[i])==SMALL_YO_1251 || ((unsigned char)line[i])==CAPITAL_YO_1251) //  Russian YO
+            else if(((unsigned char)line[i])==SMALL_YO_1251 || ((unsigned char)line[i])==CAPITAL_YO_1251) //  Russian YO is always accented
             {
                 if (newWordAccentIndex<ACCENT_ARRAY_SIZE)
                         newWordAccents[newWordAccentIndex++]=newWordLength+1  ;
@@ -130,7 +122,6 @@ void parseLine (const char* line)
                     char tmpStr[1024] ;
                     console.convert(line,strlen(line),tmpStr,1024) ;
                     cout << tmpStr << endl ;
-                    fclose(duplicate) ;
                     exit(0) ;
                 } 
                 newWord[newWordLength++]=line[i] ;
@@ -155,23 +146,12 @@ void parseLine (const char* line)
             }
             else continue ;
         }
-            
     }
     wf.reset(newWord,newWordLength,newWordAccents) ;    // last word in line
+    wf.id = _ID_counter ;
     retValue = wordList.insert(wf) ;
-    if(retValue.second==false)  
-    {   // such wordform already exists in SET
-        // newWord[newWordLength]=0;
-        // fprintf(duplicate,"_ %s\n",newWord);
-    }
-    // temp
-    else
-    {
-//        newWord[newWordLength]=0;
-//        fprintf(duplicate,"* %s\n",newWord);
-    }
-    fclose(duplicate) ;
-    // temp end
+    if(retValue.second==true)  
+        _ID_counter++ ;
 }
 
 int main(int argc, char** argv) 
@@ -213,13 +193,14 @@ int main(int argc, char** argv)
     
     FILE* fout;
     fout=fopen(outputFileName,"w") ;
-    // set<WordForm, comp_WordForm>::iterator wi ;
+
     set<WordForm>::iterator wi ;
     for(wi=wordList.begin();wi!=wordList.end();wi++)
     {
+
         char tmpStr[256] ;
         wi->str(tmpStr) ;
-        fprintf(fout,"%s;%d;",tmpStr,wi->length);
+        fprintf(fout,"%ld;%s;%d;",wi->id,tmpStr,wi->length);
         if(wi->accent[0]==0)
             fprintf(fout,"0");
         else
@@ -232,13 +213,13 @@ int main(int argc, char** argv)
                 }
             }
         fprintf (fout,"\n") ;
+
 //        // printing to console to check
 //        unsigned char tmpStrConsole[512] ;
 //        console.convert(tmpStr,wi->length,tmpStrConsole,512) ;
 //        printf ("Console Word: %s\n",tmpStrConsole) ;
     }
     fclose(fout);
- 
     clock_t endtime = clock() ;
     cout << "Execution time: " << (endtime-starttime)/CLOCKS_PER_SEC << "sec" << endl;
     return 0;

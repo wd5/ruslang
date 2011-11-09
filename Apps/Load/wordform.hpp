@@ -20,6 +20,7 @@ private:
 public:
     char* word ;
     int length ;
+    unsigned long id ;
     short accent [ACCENT_ARRAY_SIZE];        // 0 - unknown, some info is missing, some words have no vocals
     WordForm(const char* str)
     {
@@ -37,6 +38,7 @@ public:
                 accent[i]=wf.accent[i] ;
         word=(char*)malloc(sizeof(char)*length) ;
         std::memcpy(word, wf.word,length) ;
+        id=wf.id ;
     }
     WordForm(const char* str,int len)
     {
@@ -51,6 +53,7 @@ public:
         word=0 ;
         length=0 ;
         resetAccent();
+        id=0 ;
     }
     void setAccent(int accentPosition)
     {
@@ -96,6 +99,7 @@ public:
     {
         free(word) ;
         length=wf.length ;
+        id=wf.id ;
         resetAccent();
         for(int i=0;i<ACCENT_ARRAY_SIZE;i++)
                 accent[i]=wf.accent[i] ;

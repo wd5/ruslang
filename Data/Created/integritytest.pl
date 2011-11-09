@@ -6,6 +6,7 @@ my %line ;
 while(<INFILE>)
 {
 	chomp ;
+	s/^.*?;(.*)$/$1/ ;
 	if(defined $line{$_})
 	{
 		$line{$_}++ ;
