@@ -151,17 +151,11 @@ const unsigned char SMALL_E_866=0xED;
 const unsigned char SMALL_YU_866=0xEE;
 const unsigned char SMALL_YA_866=0xEF;
 
-<<<<<<< HEAD
-int strcmp_cp866( const unsigned char* str1, int len1, const unsigned char* str2, int len2) ;
-unsigned char* convert_str_cp1251_to_cp866(unsigned char* str866,const unsigned char* str1251, int len) ;
-unsigned char* convert_str_cp866_to_cp1251(unsigned char* str1251,const unsigned char* str866, int len) ;
-void hexing(const unsigned char* str) ;
-=======
+
 int strcmp_cp866( const  char* str1, int len1, const  char* str2, int len2) ;
 char* convert_str_cp1251_to_cp866(char* str866,const char* str1251, int len) ;
 char* convert_str_cp866_to_cp1251(char* str1251,const char* str866, int len) ;
 void hexing(const char* str) ;
->>>>>>> issue0001
 extern clock_t totalTimeInStrCmp ;
 
 #endif	/* RUSSIAN_CHARS_HPP */

@@ -60,11 +60,8 @@ int charcmp_cp1251(char signeda, char signedb)
 }
 
 clock_t totalTimeInStrCmp=0 ;
-<<<<<<< HEAD
-int strcmp_cp1251( const unsigned char* str1, int len1, const unsigned char* str2, int len2)
-=======
+
 int strcmp_cp1251( const char* str1, int len1, const char* str2, int len2)
->>>>>>> issue0001
 {
     //clock_t starttime=clock() ;
     

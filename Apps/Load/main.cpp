@@ -240,11 +240,6 @@ int main(int argc, char** argv)
     fclose(fout);
  
     clock_t endtime = clock() ;
-<<<<<<< HEAD
-    printf("Execution time: %d sec\n", (endtime-starttime)/CLOCKS_PER_SEC) ;
-    // printf("Execution time in strcmp: %d sec\n", totalTimeInStrCmp/CLOCKS_PER_SEC) ;
-=======
     cout << "Execution time: " << (endtime-starttime)/CLOCKS_PER_SEC << "sec" << endl;
->>>>>>> issue0001
     return 0;
 }
