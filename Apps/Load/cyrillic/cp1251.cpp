@@ -103,7 +103,7 @@ bool cp1251::is_ru(unsigned char ch)
         return false ;
 }
 
-unsigned char* cp1251::convert( const unsigned char* cp1251_in, int in_size, unsigned char* mbutf8_out, int out_size) 
+char* cp1251::convert( const char* cp1251_in, int in_size, char* mbutf8_out, int out_size) 
 {
     int mbutf8_out_i=0 ;
     for(int i=0;i<in_size;i++)
@@ -116,9 +116,9 @@ unsigned char* cp1251::convert( const unsigned char* cp1251_in, int in_size, uns
         else
         {
             wchar_t mb_char = mbutf8_code[cp1251_in[i]] ;
-            mbutf8_out[mbutf8_out_i]= *((unsigned char*) &mb_char) ;
+            mbutf8_out[mbutf8_out_i]= *((char*) &mb_char) ;
             mbutf8_out_i++;
-            mbutf8_out[mbutf8_out_i]= *(((unsigned char*) &mb_char)+1) ;
+            mbutf8_out[mbutf8_out_i]= *(((char*) &mb_char)+1) ;
             mbutf8_out_i++;
         }
         if(mbutf8_out_i>=out_size-1)     
