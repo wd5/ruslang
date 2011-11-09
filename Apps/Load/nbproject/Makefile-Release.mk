@@ -69,32 +69,32 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load.exe: ${OBJECTFILES}
 ${OBJECTDIR}/cyrillic/cp1251.o: cyrillic/cp1251.cpp 
 	${MKDIR} -p ${OBJECTDIR}/cyrillic
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/cyrillic/cp1251.o cyrillic/cp1251.cpp
+	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/cyrillic/cp1251.o cyrillic/cp1251.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 ${OBJECTDIR}/misctools.o: misctools.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/misctools.o misctools.cpp
+	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/misctools.o misctools.cpp
 
 ${OBJECTDIR}/cyrillic/str_cp1251.o: cyrillic/str_cp1251.cpp 
 	${MKDIR} -p ${OBJECTDIR}/cyrillic
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/cyrillic/str_cp1251.o cyrillic/str_cp1251.cpp
+	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/cyrillic/str_cp1251.o cyrillic/str_cp1251.cpp
 
 ${OBJECTDIR}/wordform.o: wordform.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/wordform.o wordform.cpp
+	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/wordform.o wordform.cpp
 
 ${OBJECTDIR}/convert.o: convert.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/convert.o convert.cpp
+	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/convert.o convert.cpp
 
 # Subprojects
 .build-subprojects:

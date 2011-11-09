@@ -38,6 +38,7 @@ unsigned char shiftCodes_yo_cp1251(unsigned char c)
     else if(c==SMALL_YO_1251) c=SMALL_YE_1251 ; // insert YO before ZHE and shift CAPITAL_A- SAMLL_YE left 1 position
     else if(c==CAPITAL_YO_1251) c=CAPITAL_DE_1251 ; // insert YO before ZHE (shifted already by SMALL_YO )
     // no shift for any char after SMALL_YO_1251: SMALL_ZHE_1251 and >
+    return c ;
 }
 
 int charcmp_cp1251(char signeda, char signedb)

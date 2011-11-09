@@ -53,27 +53,15 @@ void parseLine (const char* line)
     for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
         newWordAccents[newWordAccentIndex]=0;
     newWordAccentIndex=0 ;
+    FILE* duplicate=fopen("tmpDuplicated.txt","a") ;
     
     // pair< set<WordForm,comp_WordForm>::iterator, bool> retValue ;
     pair< set<WordForm>::iterator, bool> retValue ;
     
     WordForm wf ("",0);
-    for(int i=0;line[i]&&line[i]!='\r'&&line[i]!='\n';i++)
+    for(int i=0;line[i]!='\r'&&line[i]!='\n'&&line[i]!='\0';i++)
     {
-        if(status==skippingHead)
-        {
-            lastCharYO=false ;
-            if(line[i]=='#')
-            {
-                status=collectingWords;
-                newWordLength=0;
-                for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
-                    newWordAccents[newWordAccentIndex]=0;
-                newWordAccentIndex=0 ;
-            }
-            else continue ;
-        }
-        else if(status==collectingWords)
+        if(status==collectingWords)
         {
             if(line[i]==',')
             {
@@ -85,20 +73,15 @@ void parseLine (const char* line)
                     retValue = wordList.insert(wf) ;
                     if(retValue.second==false)
                     {   // such wordform already exists in SET
-//                        FILE* duplicate=fopen("tmpDuplicated.txt","a") ;
 //                        newWord[newWordLength]=0;
 //                        fprintf(duplicate,". %s\n",newWord);
-//                        fclose(duplicate) ;
-                        // delete wf ;
                     }
                     else
                     {    
                         // temp
                         {
-//                            FILE* duplicate=fopen("tmpDuplicated.txt","a") ;
 //                            newWord[newWordLength]=0;
 //                            fprintf(duplicate,"* %s\n",newWord);
-//                            fclose(duplicate) ;
                         }
                         // temp end
                         if(newWordAccents[0]==0)
@@ -132,6 +115,7 @@ void parseLine (const char* line)
                     char tmpStr[1024] ;
                     console.convert(line,strlen(line),tmpStr,1024) ;
                     cout << tmpStr << endl ;
+                    fclose(duplicate) ;
                     exit(0) ;
                 }    
             }
@@ -146,6 +130,7 @@ void parseLine (const char* line)
                     char tmpStr[1024] ;
                     console.convert(line,strlen(line),tmpStr,1024) ;
                     cout << tmpStr << endl ;
+                    fclose(duplicate) ;
                     exit(0) ;
                 } 
                 newWord[newWordLength++]=line[i] ;
@@ -157,27 +142,36 @@ void parseLine (const char* line)
                 lastCharYO=false ;
             }
         }
+        else if(status==skippingHead)
+        {
+            lastCharYO=false ;
+            if(line[i]=='#')
+            {
+                status=collectingWords;
+                newWordLength=0;
+                for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
+                    newWordAccents[newWordAccentIndex]=0;
+                newWordAccentIndex=0 ;
+            }
+            else continue ;
+        }
+            
     }
-    wf.reset(newWord,newWordLength,newWordAccents) ;
+    wf.reset(newWord,newWordLength,newWordAccents) ;    // last word in line
     retValue = wordList.insert(wf) ;
     if(retValue.second==false)  
     {   // such wordform already exists in SET
-//        FILE* duplicate=fopen("tmpDuplicated.txt","a") ;
-//        newWord[newWordLength]=0;
-//        fprintf(duplicate,"_ %s\n",newWord);
-//        fclose(duplicate) ;
-        // delete wf ;
+        // newWord[newWordLength]=0;
+        // fprintf(duplicate,"_ %s\n",newWord);
     }
     // temp
     else
     {
-//        FILE* duplicate=fopen("tmpDuplicated.txt","a") ;
 //        newWord[newWordLength]=0;
 //        fprintf(duplicate,"* %s\n",newWord);
-//        fclose(duplicate) ;
     }
+    fclose(duplicate) ;
     // temp end
-    // delete wf ;
 }
 
 int main(int argc, char** argv) 

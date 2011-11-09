@@ -37,6 +37,9 @@ char WordForm::_string[512] ;
 //}
 bool WordForm::operator<(const WordForm& wf) const 
 {
+    // debug double entities
+
+    
     // true if this < wf
     int compareResult=strcmp_cp1251(word,length,wf.word,wf.length) ;
     if(compareResult==0)
