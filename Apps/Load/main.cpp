@@ -147,11 +147,26 @@ void parseLine (const char* line)
             else continue ;
         }
     }
-    wf.reset(newWord,newWordLength,newWordAccents) ;    // last word in line
-    wf.id = _ID_counter ;
-    retValue = wordList.insert(wf) ;
-    if(retValue.second==true)  
-        _ID_counter++ ;
+    if(status==collectingWords)
+    {    
+        wf.reset(newWord,newWordLength,newWordAccents) ;
+        wf.id=_ID_counter ;
+        retValue = wordList.insert(wf) ;
+        if(retValue.second==false)
+        {   // such wordform already exists in SET
+        }
+        else
+        {    
+            _ID_counter++ ;
+            if(newWordAccents[0]==0)
+            {   // No accent found
+                FILE* noAccentFile = fopen("tmpNotAccentedWords.txt","a") ;
+                newWord[newWordLength]=0;
+                fprintf(noAccentFile,"%s\n",newWord); 
+                fclose(noAccentFile) ;
+            }
+        }
+    }   
 }
 
 int main(int argc, char** argv) 
