@@ -11,11 +11,11 @@
 #include <map>
 #include "russian_chars.hpp"
 
-class cp1251      // CodePage cp1251 manipulator
+class codepage1251      // CodePage cp1251 manipulator
 {
 public:
-    cp1251() {init();};
-     char* convert( const  char* cp1251_in, int in_size,  char* mbutf8_out, int out_size) ; // maxlength = size of mbutf8 in bytes
+    codepage1251() {init();};
+    char* convert( const  char* cp1251_in, int in_size,  char* mbutf8_out, int out_size) ; // maxlength = size of mbutf8 in bytes
     static bool is_ru(unsigned char ch) ;
     static bool is_space(unsigned char ch) ;
     static bool is_capital(unsigned char ch) ;

@@ -14,7 +14,7 @@ char WordForm::_string[512] ;
 bool WordForm::operator<(const WordForm& wf) const 
 {
     // true if this < wf
-    int compareResult=strcmp_cp1251(word,length,wf.word,wf.length) ;
+    int compareResult=cp1251::strcmp(word,length,wf.word,wf.length) ;
     if(compareResult==0)
     {
         for(int i=0;i<ACCENT_ARRAY_SIZE;i++)

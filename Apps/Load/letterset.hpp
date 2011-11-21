@@ -1,0 +1,51 @@
+/* 
+ * File:   letterset.hpp
+ * Author: ustas
+ *
+ * Created on November 19, 2011, 12:13 AM
+ */
+
+#ifndef LETTERSET_HPP
+#define	LETTERSET_HPP
+
+#include <cstring>
+#include <cstdlib>
+
+const int MAX_WORD_LENGTH=256 ;
+class WordForm ;
+class LetterSet
+{
+public:
+    char* letters ;
+    short* cnt ;
+    int length ;
+    unsigned long id ;
+    LetterSet(const LetterSet& ls) ;
+    LetterSet(const WordForm& wf ) ;
+    LetterSet(const char* str) ;
+    LetterSet(const char* str, int strLength) ;
+    ~LetterSet()
+    {
+        if(letters) 
+        { 
+            free(letters); 
+            letters=NULL;
+
+        } 
+        if(cnt) 
+        { 
+            free(cnt); 
+            cnt=NULL;
+        }
+        length=0 ; 
+    }
+    void init(const char* str,int strSize) ;
+    void reset(const char* str,int strSize) ;
+    char* str( char* s) const ;
+    bool operator<(const LetterSet& ls) const ; 
+};
+
+
+
+#endif	/* LETTERSET_HPP */
+

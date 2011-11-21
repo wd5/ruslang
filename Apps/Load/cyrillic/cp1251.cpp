@@ -21,9 +21,7 @@
 
 #include "cp1251.hpp"
 
-
-
-void cp1251::init()
+void codepage1251::init()
 {
     mbutf8_code[0xC0]= 0x90D0 ; // CAPITAL_A_1251=0xC0;
     mbutf8_code[0xC1]= 0x91D0 ; // CAPITAL_BE_1251=0xC1;
@@ -95,20 +93,20 @@ void cp1251::init()
     mbutf8_code[0xFF]= 0x8FD1 ; // SMALL_YA_1251=0xFF;
 }
 
-bool cp1251::is_ru(unsigned char ch)
+bool codepage1251::is_ru(unsigned char ch)
 {
-    if((CAPITAL_A_1251 <= ch && ch <= SMALL_YA_1251) || ch==CAPITAL_YO_1251 || ch==SMALL_YO_1251 )
+    if((cp1251::CAPITAL_A <= ch && ch <= cp1251::SMALL_YA) || ch==cp1251::CAPITAL_YO || ch==cp1251::SMALL_YO )
         return true ;
     else
         return false ;
 }
 
-char* cp1251::convert( const char* cp1251_in, int in_size, char* mbutf8_out, int out_size) 
+char* codepage1251::convert( const char* cp1251_in, int in_size, char* mbutf8_out, int out_size) 
 {
     int mbutf8_out_i=0 ;
     for(int i=0;i<in_size;i++)
     {
-        if(!cp1251::is_ru(cp1251_in[i]))
+        if(!codepage1251::is_ru(cp1251_in[i]))
         {
             mbutf8_out[mbutf8_out_i]=cp1251_in[i] ;
             mbutf8_out_i++;

@@ -43,11 +43,17 @@ unsigned char order_cp1251[] =
 0xF0,	0xF1,	0xF2,	0xF3,	0xF4,	0xF5,	0xF6,	0xF7,	0xF8,	0xF9,	0xFA,	0xFB,	0xFC,	0xFD,	0xFE,	0xFF
 } ;
 
+unsigned char number_codes[10] = 
+{
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39
+} ;
 
-bool isRussianChar_cp1251(char signeda)
+using namespace cp1251 ;
+
+bool cp1251::isRussianChar(char signeda)
 {
     unsigned char a = (unsigned char)signeda ;
-    if((CAPITAL_A_1251 <= a && a <= SMALL_YA_1251) || a==SMALL_YO_1251 || a==CAPITAL_YO_1251 )
+    if((cp1251::CAPITAL_A <= a && a <= cp1251::SMALL_YA) || a==cp1251::SMALL_YO || a==cp1251::CAPITAL_YO )
         return true ;
     else
         return false ;
@@ -55,15 +61,15 @@ bool isRussianChar_cp1251(char signeda)
 
 unsigned char shiftCodes_yo_cp1251(unsigned char c)
 {
-    if (CAPITAL_ZHE_1251<=c && c<=SMALL_YE_1251) c-- ; // all chars shifts to left 1 position
-    else if (CAPITAL_A_1251<=c && c<=CAPITAL_YE_1251) c-=2 ; // all chars shift 2 position left due to CAP/SMA YO
-    else if(c==SMALL_YO_1251) c=SMALL_YE_1251 ; // insert YO before ZHE and shift CAPITAL_A- SAMLL_YE left 1 position
-    else if(c==CAPITAL_YO_1251) c=CAPITAL_DE_1251 ; // insert YO before ZHE (shifted already by SMALL_YO )
-    // no shift for any char after SMALL_YO_1251: SMALL_ZHE_1251 and >
+    if (cp1251::CAPITAL_ZHE<=c && c<=cp1251::SMALL_YE) c-- ; // all chars shifts to left 1 position
+    else if (cp1251::CAPITAL_A<=c && c<=cp1251::CAPITAL_YE) c-=2 ; // all chars shift 2 position left due to CAP/SMA YO
+    else if(c==cp1251::SMALL_YO) c=cp1251::SMALL_YE ; // insert YO before ZHE and shift CAPITAL_A- SAMLL_YE left 1 position
+    else if(c==cp1251::CAPITAL_YO) c=cp1251::CAPITAL_DE ; // insert YO before ZHE (shifted already by SMALL_YO )
+    // no shift for any char after cp1251::SMALL_YO: cp1251::SMALL_ZHE and >
     return c ;
 }
 
-int charcmp_cp1251(char signeda, char signedb)
+int cp1251::charcmp(char signeda, char signedb)
 {
     // a>b => 1
     // a<b => -1
@@ -72,7 +78,7 @@ int charcmp_cp1251(char signeda, char signedb)
     unsigned char b=(unsigned char)signedb ;
     if(a==b) return 0 ;
 
-    if(isRussianChar_cp1251(signeda) && isRussianChar_cp1251(signedb))
+    if(isRussianChar(signeda) && isRussianChar(signedb))
     {
         a=shiftCodes_yo_cp1251(a) ;
         b=shiftCodes_yo_cp1251(b) ;
@@ -81,29 +87,7 @@ int charcmp_cp1251(char signeda, char signedb)
     else    return -1;
 }
 
-clock_t totalTimeInStrCmp=0 ;
-
-int strcmp_cp1251_alt( const char* str1, int len1, const char* str2, int len2)
-{
-    int i=0 ;
-    int compareResult=0 ;
-    for(i=0;i<len1 && i<len2;i++)
-    {
-        if( str1[i] == str2[i] ) continue ;
-        compareResult=charcmp_cp1251(str1[i],str2[i]) ;
-        if(compareResult!=0) break ;
-    }
-    if(compareResult==0)
-    {
-        if(len1>len2) compareResult=1 ;
-        else if(len1<len2) compareResult=-1 ;
-        // else (len1 == len2) == true
-    }
-
-    return compareResult ;
-}
-
-int strcmp_cp1251( const char* str1, int len1, const char* str2, int len2)
+int cp1251::strcmp( const char* str1, int len1, const char* str2, int len2)
 {
     int i=0 ;
     for(i=0;i<len1 && i<len2;i++)
@@ -124,18 +108,18 @@ int strcmp_cp1251( const char* str1, int len1, const char* str2, int len2)
 
 unsigned char convert_char_cp1251_to_cp866( unsigned char c)
 {
-    if(CAPITAL_A_1251<=c && c<=SMALL_PE_1251) c-=0x40 ;
-    else if(SMALL_ER_1251<=c && c<=SMALL_YA_1251) c-=010 ;
-    else if(c==CAPITAL_YO_1251) c=CAPITAL_YO_866 ;
-    else if(c==SMALL_YO_1251) c=SMALL_YO_866 ;
+    if(cp1251::CAPITAL_A<=c && c<=cp1251::SMALL_PE) c-=0x40 ;
+    else if(cp1251::SMALL_ER<=c && c<=cp1251::SMALL_YA) c-=010 ;
+    else if(c==cp1251::CAPITAL_YO) c=cp866::CAPITAL_YO ;
+    else if(c==cp1251::SMALL_YO) c=cp866::SMALL_YO ;
     return c ;
 }
 unsigned char convert_char_cp866_to_cp1251( unsigned char c)
 {
-    if(CAPITAL_A_866<=c && c<=SMALL_PE_866) c+=0x40 ;
-    else if(SMALL_ER_866<=c && c<=SMALL_YA_866) c+=010 ;
-    else if(c==CAPITAL_YO_866) c=CAPITAL_YO_1251 ;
-    else if(c==SMALL_YO_866) c=SMALL_YO_1251 ;
+    if(cp866::CAPITAL_A<=c && c<=cp866::SMALL_PE) c+=0x40 ;
+    else if(cp866::SMALL_ER<=c && c<=cp866::SMALL_YA) c+=010 ;
+    else if(c==cp866::CAPITAL_YO) c=cp1251::CAPITAL_YO ;
+    else if(c==cp866::SMALL_YO) c=cp1251::SMALL_YO ;
     return c ;
 }
  char* convert_str_cp1251_to_cp866(char* str866,const  char* str1251, int len)

@@ -39,6 +39,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/misctools.o \
 	${OBJECTDIR}/cyrillic/str_cp1251.o \
 	${OBJECTDIR}/wordform.o \
+	${OBJECTDIR}/letterset.o \
 	${OBJECTDIR}/convert.o
 
 
@@ -90,6 +91,11 @@ ${OBJECTDIR}/wordform.o: wordform.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/wordform.o wordform.cpp
+
+${OBJECTDIR}/letterset.o: letterset.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/letterset.o letterset.cpp
 
 ${OBJECTDIR}/convert.o: convert.cpp 
 	${MKDIR} -p ${OBJECTDIR}
