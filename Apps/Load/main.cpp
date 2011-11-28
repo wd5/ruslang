@@ -32,7 +32,7 @@ const char* ScrabOutputFileName = "d:/dev/RussianLanguage/Data/Created/RussianWo
 
 // set <WordForm,comp_WordForm> wordList ;
 set <WordForm> wordList ; // WordForm operators == and < exist
-set <LetterSet> scrabList ; 
+set <LetterSet> lettersetList ; 
 codepage1251 console ;
 
 /*
@@ -64,7 +64,7 @@ void parseLine (const char* line)
     pair< set<LetterSet>::iterator, bool> lsRetValue ;
     
     WordForm wf ("",0);
-    LetterSet ls ("") ;
+    LetterSet ls ("empty") ;
     
     for(int i=0;line[i]!='\r'&&line[i]!='\n'&&line[i]!='\0';i++)
     {
@@ -93,13 +93,16 @@ void parseLine (const char* line)
                             fprintf(noAccentFile,"%s\n",newWord); 
                             fclose(noAccentFile) ;
                         }
+                        
+                        ls.reset(newWord,newWordLength) ;
+                        ls.id=LetterSet_ID_counter;
+                        lsRetValue = lettersetList.insert(ls) ;
+                        if(lsRetValue.second==true )
+                        {
+                            // lsRetValue.first->id=LetterSet_ID_counter ;
+                            LetterSet_ID_counter++ ;
+                        }
                     }
-                    
-                    ls.reset(newWord,newWordLength) ;
-                    ls.id=LetterSet_ID_counter;
-                    lsRetValue = scrabList.insert(ls) ;
-                    if(lsRetValue.second==true )
-                        LetterSet_ID_counter++ ;
                 }
                 
                 for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
@@ -131,11 +134,11 @@ void parseLine (const char* line)
                         newWordAccents[newWordAccentIndex++]=newWordLength+1  ;
                 else
                 {
-                    cout << "a word found with number of accents greater than " << ACCENT_ARRAY_SIZE << endl ;
-                    cout << "line is below:" <<endl ;
+                    cerr << "source error [0x0004]: a word found with number of accents greater than " << ACCENT_ARRAY_SIZE << endl ;
+                    cout << ">> line is below:" <<endl ;
                     char tmpStr[1024] ;
                     console.convert(line,strlen(line),tmpStr,1024) ;
-                    cout << tmpStr << endl ;
+                    cout << ">>" <<tmpStr << endl ;
                     exit(0) ;
                 } 
                 newWord[newWordLength++]=line[i] ;
@@ -179,12 +182,12 @@ void parseLine (const char* line)
                 fprintf(noAccentFile,"%s\n",newWord); 
                 fclose(noAccentFile) ;
             }
+            ls.reset(newWord,newWordLength) ;
+            ls.id=LetterSet_ID_counter;
+            lsRetValue = lettersetList.insert(ls) ;
+            if(lsRetValue.second==true)
+                  LetterSet_ID_counter++ ;
         }
-        ls.reset(newWord,newWordLength) ;
-        ls.id=LetterSet_ID_counter;
-        lsRetValue = scrabList.insert(ls) ;
-        if(lsRetValue.second==true)
-              LetterSet_ID_counter++ ;
     }   
 }
 
@@ -202,9 +205,14 @@ int main(int argc, char** argv)
         {
             parseLine(buffer) ;
             counter++; 
+            if(counter%1000 ==0)
+            {
+                cout << "main debug: "<<counter << "/" << wordList.size() <<"/" << lettersetList.size() << endl ;
+            // if(counter>2) exit(0) ;    
+            }
         }
         
-        cout <<"Lines read: "<<counter<<endl ;
+        //cout <<"Lines read: "<<counter<<endl ;
         fclose(fin) ;
     }
     cout << "Word forms added: " << wordList.size() << endl ;
@@ -256,11 +264,11 @@ int main(int argc, char** argv)
     fclose(fout);
     
     
-    cout << "Total sets of letters added: " << scrabList.size() << endl ;
+    cout << "Total sets of letters added: " << lettersetList.size() << endl ;
     fout=fopen(ScrabOutputFileName,"w") ;
 
     set<LetterSet>::iterator ls ;
-    for(ls=scrabList.begin();ls!=scrabList.end();ls++)
+    for(ls=lettersetList.begin();ls!=lettersetList.end();ls++)
     {
         char tmpStr[256] ;
         fprintf(fout,"%ld;%s",ls->id,ls->str(tmpStr));
