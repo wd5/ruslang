@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=Cygwin-Windows
+CND_PLATFORM=Cygwin_4.x-Windows
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -39,7 +39,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/misctools.o \
 	${OBJECTDIR}/cyrillic/str_cp1251.o \
 	${OBJECTDIR}/wordform.o \
+	${OBJECTDIR}/lettersetstorage.o \
 	${OBJECTDIR}/letterset.o \
+	${OBJECTDIR}/wordformstorage.o \
 	${OBJECTDIR}/convert.o
 
 
@@ -92,10 +94,20 @@ ${OBJECTDIR}/wordform.o: wordform.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/wordform.o wordform.cpp
 
+${OBJECTDIR}/lettersetstorage.o: lettersetstorage.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/lettersetstorage.o lettersetstorage.cpp
+
 ${OBJECTDIR}/letterset.o: letterset.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/letterset.o letterset.cpp
+
+${OBJECTDIR}/wordformstorage.o: wordformstorage.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/wordformstorage.o wordformstorage.cpp
 
 ${OBJECTDIR}/convert.o: convert.cpp 
 	${MKDIR} -p ${OBJECTDIR}

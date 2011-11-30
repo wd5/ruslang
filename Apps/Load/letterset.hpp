@@ -3,6 +3,8 @@
  * Author: ustas
  *
  * Created on November 19, 2011, 12:13 AM
+ * Last modified: 2011-12-01
+ * 
  */
 
 #ifndef LETTERSET_HPP
@@ -10,9 +12,10 @@
 
 #include <cstring>
 #include <cstdlib>
+#include "wordform.hpp"
 
-const int MAX_WORD_LENGTH=256 ;
-class WordForm ;
+// const int MAX_WORD_LENGTH=256 ;
+
 class LetterSet
 {
 public:
@@ -28,13 +31,13 @@ public:
     {
         if(letters) 
         { 
-            free(letters); 
+            std::free(letters); 
             letters=NULL;
 
         } 
         if(cnt) 
         { 
-            free(cnt); 
+            std::free(cnt); 
             cnt=NULL;
         }
         length=0 ; 
@@ -44,8 +47,6 @@ public:
     char* str( char* s) const ;
     bool operator<(const LetterSet& ls) const ; 
 };
-
-
 
 #endif	/* LETTERSET_HPP */
 

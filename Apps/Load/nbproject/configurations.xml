@@ -10,9 +10,11 @@
         <itemPath>cyrillic/str_cp1251.cpp</itemPath>
       </logicalFolder>
       <itemPath>letterset.cpp</itemPath>
+      <itemPath>lettersetstorage.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>misctools.cpp</itemPath>
       <itemPath>wordform.cpp</itemPath>
+      <itemPath>wordformstorage.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="HeaderFiles"
                    displayName="Файлы заголовков"
@@ -21,10 +23,12 @@
       <itemPath>cyrillic/codecvt_cp866.hpp</itemPath>
       <itemPath>cyrillic/cp1251.hpp</itemPath>
       <itemPath>letterset.hpp</itemPath>
+      <itemPath>lettersetstorage.hpp</itemPath>
       <itemPath>cyrillic/mbwcvt.hpp</itemPath>
       <itemPath>misctools.h</itemPath>
       <itemPath>cyrillic/russian_chars.hpp</itemPath>
       <itemPath>wordform.hpp</itemPath>
+      <itemPath>wordformstorage.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Файлы ресурсов"

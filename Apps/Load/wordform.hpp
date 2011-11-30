@@ -8,7 +8,8 @@
 #ifndef WORDFORM_HPP
 #define	WORDFORM_HPP
 
-#include <cstring>
+#include <cstring>      // strlen
+#include <cstdlib>     // for malloc(), and free()
 #include "cyrillic/russian_chars.hpp"
 #include "cyrillic/cp1251.hpp"
 
@@ -24,8 +25,8 @@ public:
     short accent [ACCENT_ARRAY_SIZE];        // 0 - unknown, some info is missing, some words have no vocals
     WordForm(const char* str)
     {
-        int len=strlen((const char*) str); 
-        word=(char*)malloc(sizeof(char)*len) ;
+        int len=std::strlen((const char*) str); 
+        word=(char*)std::malloc(sizeof(char)*len) ;
         std::memcpy(word, str,len) ;
         length=len ;
         resetAccent();
@@ -36,20 +37,20 @@ public:
         resetAccent();
         for(int i=0;i<ACCENT_ARRAY_SIZE;i++)
                 accent[i]=wf.accent[i] ;
-        word=(char*)malloc(sizeof(char)*length) ;
-        std::memcpy(word, wf.word,length) ;
+        word=(char*)std::malloc(sizeof(char)*length) ;
+        std::memcpy(word, wf.word,sizeof(char)*length) ;
         id=wf.id ;
     }
     WordForm(const char* str,int len)
     {
-        word=(char*)malloc(sizeof(char)*len) ;
-        std::memcpy(word,str,len) ;
+        word=(char*)std::malloc(sizeof(char)*len) ;
+        std::memcpy(word,str,sizeof(char)*len) ;
         length=len ;
         resetAccent();
     }
     ~WordForm()
     {
-        free(word);
+        std::free(word);
         word=0 ;
         length=0 ;
         resetAccent();
@@ -97,20 +98,20 @@ public:
     bool operator<(const WordForm& wf) const ;
     WordForm& operator=(const WordForm& wf) 
     {
-        free(word) ;
+        std::free(word) ;
         length=wf.length ;
         id=wf.id ;
         resetAccent();
         for(int i=0;i<ACCENT_ARRAY_SIZE;i++)
                 accent[i]=wf.accent[i] ;
-        word=(char*)malloc(sizeof(char)*length) ;
+        word=(char*)std::malloc(sizeof(char)*length) ;
         std::memcpy(word, wf.word,length) ;
         return *this ;
     }
     void reset( const char* str,int len, short acct[] )
     {
-        free(word) ;
-        word=(char*)malloc(sizeof(char)*len) ;
+        std::free(word) ;
+        word=(char*)std::malloc(sizeof(char)*len) ;
         std::memcpy(word,str,len) ;
         length=len ;
         resetAccent();
@@ -119,12 +120,6 @@ public:
     }
     
 };
-
-//class comp_WordForm
-//{
-//public:
-//    bool operator()(const WordForm& wf1, const WordForm& wf2) const ;
-//};
 
 #endif	/* WORDFORM_HPP */
 

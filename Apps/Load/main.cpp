@@ -10,19 +10,13 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <list>
 #include <string>
-#include <set>
-#include <iterator>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <time.h>
 #include "cyrillic/russian_chars.hpp"
 #include "cyrillic/cp1251.hpp"
 #include "misctools.h"
-#include "wordform.hpp"
-#include "letterset.hpp"
+#include "wordformstorage.hpp"
+#include "lettersetstorage.hpp"
 
 using namespace std;
 const char* inputAccentedWordsFileName = "d:/dev/RussianLanguage/Data/Collected/RussianWords_AllForms_Accents_86xxxBases_cp1251.txt" ;
@@ -30,9 +24,11 @@ const char* inputMissingWordsFileName = "d:/dev/RussianLanguage/Data/Collected/R
 const char* outputFileName = "d:/dev/RussianLanguage/Data/Created/RussianWords_AllForms_Len_Accents_cp1251.txt" ;
 const char* ScrabOutputFileName = "d:/dev/RussianLanguage/Data/Created/RussianWords_LetterSets_cp1251.txt" ; 
 
-// set <WordForm,comp_WordForm> wordList ;
-set <WordForm> wordList ; // WordForm operators == and < exist
-set <LetterSet> lettersetList ; 
+WordFormStorage wfStorage ;
+LetterSetStorage lsStorage ;
+
+//set <WordForm> wordList ; // WordForm operators == and < exist
+// set <LetterSet> lettersetList ; 
 codepage1251 console ;
 
 /*
@@ -43,9 +39,6 @@ codepage1251 console ;
  * - RussianWords_AllForms_Accents_86xxxBases_cp1251.txt
  * - RussianWords_AllForms_Accents_missing_cp1251.txt
  */
-
-unsigned long WordForm_ID_counter=1 ;
-unsigned long LetterSet_ID_counter=1 ;
 
 void parseLine (const char* line)
 {
@@ -60,9 +53,7 @@ void parseLine (const char* line)
         newWordAccents[newWordAccentIndex]=0;
     newWordAccentIndex=0 ;
     
-    pair< set<WordForm>::iterator, bool> wfRetValue ;
-    pair< set<LetterSet>::iterator, bool> lsRetValue ;
-    
+
     WordForm wf ("",0);
     LetterSet ls ("empty") ;
     
@@ -77,15 +68,8 @@ void parseLine (const char* line)
                 else
                 {    
                     wf.reset(newWord,newWordLength,newWordAccents) ;
-                    wf.id=WordForm_ID_counter ;
-                    wfRetValue = wordList.insert(wf) ;
-                    if(wfRetValue.second==false)
-                    {   // such wordform already exists in SET
-
-                    }
-                    else
-                    {    
-                        WordForm_ID_counter++ ;
+                    if(wfStorage.add(wf) == true)
+                    {
                         if(newWordAccents[0]==0)
                         {   // No accent found
                             FILE* noAccentFile = fopen("tmpNotAccentedWords.txt","a") ;
@@ -95,13 +79,7 @@ void parseLine (const char* line)
                         }
                         
                         ls.reset(newWord,newWordLength) ;
-                        ls.id=LetterSet_ID_counter;
-                        lsRetValue = lettersetList.insert(ls) ;
-                        if(lsRetValue.second==true )
-                        {
-                            // lsRetValue.first->id=LetterSet_ID_counter ;
-                            LetterSet_ID_counter++ ;
-                        }
+                        lsStorage.add(ls) ;
                     }
                 }
                 
@@ -167,14 +145,8 @@ void parseLine (const char* line)
     if(status==collectingWords)
     {    
         wf.reset(newWord,newWordLength,newWordAccents) ;
-        wf.id=WordForm_ID_counter ;
-        wfRetValue = wordList.insert(wf) ;
-        if(wfRetValue.second==false)
-        {   // such wordform already exists in SET
-        }
-        else
+        if( wfStorage.add(wf) == true ) 
         {    
-            WordForm_ID_counter++ ;
             if(newWordAccents[0]==0)
             {   // No accent found
                 FILE* noAccentFile = fopen("tmpNotAccentedWords.txt","a") ;
@@ -183,10 +155,7 @@ void parseLine (const char* line)
                 fclose(noAccentFile) ;
             }
             ls.reset(newWord,newWordLength) ;
-            ls.id=LetterSet_ID_counter;
-            lsRetValue = lettersetList.insert(ls) ;
-            if(lsRetValue.second==true)
-                  LetterSet_ID_counter++ ;
+            lsStorage.add(ls) ;
         }
     }   
 }
@@ -204,18 +173,18 @@ int main(int argc, char** argv)
         while(fgets((char*)buffer,4096,fin))
         {
             parseLine(buffer) ;
-            counter++; 
-            if(counter%1000 ==0)
-            {
-                cout << "main debug: "<<counter << "/" << wordList.size() <<"/" << lettersetList.size() << endl ;
-            // if(counter>2) exit(0) ;    
-            }
+//            counter++; 
+//            if(counter%1000 ==0)
+//            {
+//                cout << "main debug: "<<counter << "/" << wfStorage.size() <<"/" << lsStorage.size() << endl ;
+//            // if(counter>2) exit(0) ;    
+//            }
         }
         
         //cout <<"Lines read: "<<counter<<endl ;
         fclose(fin) ;
     }
-    cout << "Word forms added: " << wordList.size() << endl ;
+    cout << "Word forms added: " << wfStorage.size() << endl ;
     
     fin = fopen(inputMissingWordsFileName,"r") ;
     counter=0 ;
@@ -231,52 +200,13 @@ int main(int argc, char** argv)
         cout <<"Lines read: "<<counter<<endl ;
         fclose(fin) ;
     }
-    cout << "Total word forms added: " << wordList.size() << endl ;
-
-    FILE* fout;
-    fout=fopen(outputFileName,"w") ;
-
-    set<WordForm>::iterator wi ;
-    for(wi=wordList.begin();wi!=wordList.end();wi++)
-    {
-
-        char tmpStr[256] ;
-        wi->str(tmpStr) ;
-        fprintf(fout,"%ld;%s;%d;",wi->id,tmpStr,wi->length);
-        if(wi->accent[0]==0)
-            fprintf(fout,"0");
-        else
-            for(int i=0;i<ACCENT_ARRAY_SIZE;i++)
-            {
-                if(wi->accent[i]>0)
-                {
-                    if(i>0) fprintf(fout,",") ;
-                    fprintf(fout,"%d", wi->accent[i]);
-                }
-            }
-        fprintf (fout,"\n") ;
-
-//        // printing to console to check
-//        unsigned char tmpStrConsole[512] ;
-//        console.convert(tmpStr,wi->length,tmpStrConsole,512) ;
-//        printf ("Console Word: %s\n",tmpStrConsole) ;
-    }
-    fclose(fout);
+    cout << "Total word forms added: " << wfStorage.size() << endl ;
+    wfStorage.save(outputFileName) ;
     
-    
-    cout << "Total sets of letters added: " << lettersetList.size() << endl ;
-    fout=fopen(ScrabOutputFileName,"w") ;
+    cout << "Total sets of letters added: " << lsStorage.size() << endl ;
+    lsStorage.save(ScrabOutputFileName) ;
 
-    set<LetterSet>::iterator ls ;
-    for(ls=lettersetList.begin();ls!=lettersetList.end();ls++)
-    {
-        char tmpStr[256] ;
-        fprintf(fout,"%ld;%s",ls->id,ls->str(tmpStr));
-        fprintf (fout,"\n") ;
-    }
-    fclose(fout);
-    
-    
+
     clock_t endtime = clock() ;
     cout << "Execution time: " << (endtime-starttime)/CLOCKS_PER_SEC << "sec" << endl;
     return 0;
