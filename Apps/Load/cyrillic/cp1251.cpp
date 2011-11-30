@@ -95,7 +95,10 @@ void codepage1251::init()
 
 bool codepage1251::is_ru(unsigned char ch)
 {
-    if((cp1251::CAPITAL_A <= ch && ch <= cp1251::SMALL_YA) || ch==cp1251::CAPITAL_YO || ch==cp1251::SMALL_YO )
+    if(((cp1251::CAPITAL_A <= ch) 
+            // && (ch <= cp1251::SMALL_YA) // excluded due to compiler warning
+                                           // comparison is always true due to limited range of data type
+           ) || ch==cp1251::CAPITAL_YO || ch==cp1251::SMALL_YO )
         return true ;
     else
         return false ;
@@ -121,10 +124,10 @@ char* codepage1251::convert( const char* cp1251_in, int in_size, char* mbutf8_ou
         }
         if(mbutf8_out_i>=out_size-1)     
         {
-            mbutf8_out[mbutf8_out_i] = NULL ;
+            mbutf8_out[mbutf8_out_i] = (char) 0 ;
             return mbutf8_out ; // no space in mbutf8 buffer
         }
     }
-    mbutf8_out[mbutf8_out_i] = NULL ;
+    mbutf8_out[mbutf8_out_i] = (char) 0 ;
     return mbutf8_out ;
 }
