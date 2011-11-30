@@ -52,4 +52,4 @@
 
 history
 2011-09-26 GitHub added
-
+2011-11-30 EMC repository exists, checking as it works
