@@ -26,9 +26,6 @@ const char* ScrabOutputFileName = "d:/dev/RussianLanguage/Data/Created/RussianWo
 
 WordFormStorage wfStorage ;
 LetterSetStorage lsStorage ;
-
-//set <WordForm> wordList ; // WordForm operators == and < exist
-// set <LetterSet> lettersetList ; 
 codepage1251 console ;
 
 /*
@@ -52,7 +49,6 @@ void parseLine (const char* line)
     for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
         newWordAccents[newWordAccentIndex]=0;
     newWordAccentIndex=0 ;
-    
 
     WordForm wf ("",0);
     LetterSet ls ("empty") ;
@@ -98,12 +94,12 @@ void parseLine (const char* line)
                         newWordAccents[newWordAccentIndex++]=newWordLength ;
                 else
                 {
-                    cout << "a word found with number of accents greater than " << ACCENT_ARRAY_SIZE << endl ;
-                    cout << "line is below:" <<endl ;
+                    cout << "source error [0x0005]: a word found with number of accents greater than " << ACCENT_ARRAY_SIZE << endl ;
+                    cout << ">> line is below:" <<endl ;
                     char tmpStr[1024] ;
                     console.convert(line,strlen(line),tmpStr,1024) ;
-                    cout << tmpStr << endl ;
-                    exit(0) ;
+                    cout << ">> " << tmpStr << endl ;
+                    exit(-1) ;
                 }    
             }
             else if(((unsigned char)line[i])==cp1251::SMALL_YO || ((unsigned char)line[i])==cp1251::CAPITAL_YO) //  Russian YO is always accented
@@ -116,7 +112,7 @@ void parseLine (const char* line)
                     cout << ">> line is below:" <<endl ;
                     char tmpStr[1024] ;
                     console.convert(line,strlen(line),tmpStr,1024) ;
-                    cout << ">>" <<tmpStr << endl ;
+                    cout << ">> " <<tmpStr << endl ;
                     exit(0) ;
                 } 
                 newWord[newWordLength++]=line[i] ;
@@ -205,7 +201,6 @@ int main(int argc, char** argv)
     
     cout << "Total sets of letters added: " << lsStorage.size() << endl ;
     lsStorage.save(ScrabOutputFileName) ;
-
 
     clock_t endtime = clock() ;
     cout << "Execution time: " << (endtime-starttime)/CLOCKS_PER_SEC << "sec" << endl;

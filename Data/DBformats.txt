@@ -1,0 +1,60 @@
+[SOURCE1]
+filename: Data\Collected\RussianWords_AllForms_Accents_86xxxBases_cp1251.txt
+source: web http://????????
+codepage: Windows-CP1251, 0-256, single-byte
+description: almost all Russian wordforms
+format 2011-09-01:
+<not accented initial word form>#<accented word form1>[,<accented word form2>[,...]]
+comment: edited manually to add accents to some wordforms
+comment: some words use russian YE instead of russian YO
+comment: missing russian brute words/wordforms
+comment: does not contain name, geo-names, etc.
+
+[SOURCE2]
+filename: Data\Collected\RussianWords_AllForms_Accents_missing_cp1251.txt
+source: manually created, contains words missing in [SOURCE1]
+codepage: Windows-CP1251, 0-256, single-byte
+description: additions to [SOURCE1]
+format 2011-09-01:
+<not accented initial word form>#<accented word form1>[,<accented word form2>[,...]]
+comment: everything but content matches [SOURCE1], can be parsed by the same parser
+
+[CREATED1]
+filename: Data\Created\RussianWords_AllForms_Len_Accents_cp1251.txt
+source: created by script load.exe (2011-12-01)
+codepage: Windows-CP1251, 0-256, single-byte
+description: list of all russian wordforms with attributes (see format)
+format 2011-12-01:
+<wordform ID>;<wordform>;<wordform length>;<accent1>[,<accent2>[,<accent3>]]
+comment: fields separated by ";"
+comment: 1 line for 1 wordform
+comment: sources: [SOURCE1] & [SOURCE2]
+
+[CREATED2]
+filename: Data/Created/RussianWords_LetterSets_cp1251.txt
+source: created by script load.exe (2011-12-01)
+codepage: Windows-CP1251, 0-256, single-byte
+description: list of "char set" possible from all wordforms in [CREATED1]
+format 2011-12-01:
+<char set ID>;<char1><count1>[<char2><count2>[<><>[...]]]
+comment: in format: <char#><count#> = <characted found in wordform><number of occurences in wordform>
+comment: 1 line for 1 symbol set
+comment: sources: [SOURCE1] & [SOURCE2]
+
+
+
+
+
+
+
+
+[TEMPLATE]
+filename: Data/Created/
+source: 
+codepage: Windows-CP1251, 0-256, single-byte
+description: 
+format YYYY-MM-DD:
+<>,<>[,...]
+comment:
+
+
