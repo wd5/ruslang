@@ -98,6 +98,7 @@ bool codepage1251::is_ru(unsigned char ch)
     if(((cp1251::CAPITAL_A <= ch) 
             // && (ch <= cp1251::SMALL_YA) // excluded due to compiler warning
                                            // comparison is always true due to limited range of data type
+                                           // remove this line: testing branches in GIT: 2011-11-30
            ) || ch==cp1251::CAPITAL_YO || ch==cp1251::SMALL_YO )
         return true ;
     else
