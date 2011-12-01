@@ -53,7 +53,10 @@ using namespace cp1251 ;
 bool cp1251::isRussianChar(char signeda)
 {
     unsigned char a = (unsigned char)signeda ;
-    if((cp1251::CAPITAL_A <= a && a <= cp1251::SMALL_YA) || a==cp1251::SMALL_YO || a==cp1251::CAPITAL_YO )
+    if((cp1251::CAPITAL_A <= a 
+            // && a <= cp1251::SMALL_YA // commented due to compiler warning
+                                        // comparison is always true due to limited range of data type
+        ) || a==cp1251::SMALL_YO || a==cp1251::CAPITAL_YO )
         return true ;
     else
         return false ;
@@ -109,7 +112,10 @@ int cp1251::strcmp( const char* str1, int len1, const char* str2, int len2)
 unsigned char convert_char_cp1251_to_cp866( unsigned char c)
 {
     if(cp1251::CAPITAL_A<=c && c<=cp1251::SMALL_PE) c-=0x40 ;
-    else if(cp1251::SMALL_ER<=c && c<=cp1251::SMALL_YA) c-=010 ;
+    else if(cp1251::SMALL_ER<=c
+            // && c<=cp1251::SMALL_YA           // excluded due to compiler warning
+                                                // comparison is always true due to limited range of data type
+            ) c-=010 ;
     else if(c==cp1251::CAPITAL_YO) c=cp866::CAPITAL_YO ;
     else if(c==cp1251::SMALL_YO) c=cp866::SMALL_YO ;
     return c ;

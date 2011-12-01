@@ -66,11 +66,11 @@ void WordFormStorage::save (const char* filename) const
  
 }
 
-    WordFormStorage::WordFormStorage() 
-    {
-        
-    }
-    WordFormStorage::~WordFormStorage() 
-    {
-        
-    }
+WordFormStorage::WordFormStorage() 
+{
+
+}
+WordFormStorage::~WordFormStorage() 
+{
+
+}
