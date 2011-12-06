@@ -20,6 +20,7 @@ bool WordFormStorage::add(WordForm& wf)
     if(wfRetValue.second==false)
        // such wordform already exists in SET
         return false ;
+    lastAddedWordForm = wfRetValue.first ;
     ID_counter++ ;
     return true ; 
 }
@@ -30,7 +31,7 @@ bool WordFormStorage::remove(const WordForm& wf)
 }
 void WordFormStorage::clear()  
 {
-
+    lastAddedWordForm=NULL ;
 }
 
 unsigned long WordFormStorage::size()  const
@@ -66,11 +67,16 @@ void WordFormStorage::save (const char* filename) const
  
 }
 
+const WordForm* WordFormStorage::lastAdded() const
+{
+    return lastAddedWordForm ;
+}
+
 WordFormStorage::WordFormStorage() 
 {
-
+    lastAddedWordForm=NULL ;
 }
 WordFormStorage::~WordFormStorage() 
 {
-
+    lastAddedWordForm=NULL ;
 }

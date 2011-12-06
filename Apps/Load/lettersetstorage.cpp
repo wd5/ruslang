@@ -23,6 +23,23 @@ bool LetterSetStorage::add(LetterSet& ls)
     ID_counter++ ;
     return true ;
 }
+
+bool LetterSetStorage::add(const WordForm& wf) 
+{
+    LetterSet ls(wf) ;
+    pair< set<LetterSet>::iterator, bool> lsRetValue ;
+    
+    ls.id=ID_counter;
+    lsRetValue = lsSet.insert(ls) ;
+    if(lsRetValue.second==false )
+    {
+        lsRetValue.first->link(wf) ;
+        return false ;
+    }
+    ID_counter++ ;
+    return true ;
+}
+
 bool LetterSetStorage::remove(const LetterSet& ls) 
 {
     return true ;

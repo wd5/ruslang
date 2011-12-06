@@ -30,6 +30,7 @@ public:
     ~LetterSetStorage() { }
     
     bool add(LetterSet& ls) ;
+    bool add(const WordForm& wf) ;
     bool remove(const LetterSet& ls) ;
     void clear() ;
     unsigned long size() const ;

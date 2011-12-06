@@ -150,8 +150,9 @@ void parseLine (const char* line)
                 fprintf(noAccentFile,"%s\n",newWord); 
                 fclose(noAccentFile) ;
             }
-            ls.reset(newWord,newWordLength) ;
-            lsStorage.add(ls) ;
+            //ls.reset(newWord,newWordLength) ;
+            //lsStorage.add(ls) ;
+            lsStorage.add(*wfStorage.lastAdded()) ;
         }
     }   
 }
