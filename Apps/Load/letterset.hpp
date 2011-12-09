@@ -23,8 +23,8 @@ public:
     short* cnt ;
     int length ;
     unsigned long id ;
-    unsigned long *wfLinked ;
-    unsigned int wfLinkedCounter ;
+    mutable unsigned long *wfLinked ;
+    mutable unsigned int wfLinkedCounter ;
     LetterSet(const LetterSet& ls) ;
     LetterSet(const WordForm& wf ) ;
     LetterSet(const char* str) ;
@@ -48,7 +48,7 @@ public:
     void reset(const char* str,int strSize) ;
     char* str( char* s) const ;
     bool operator<(const LetterSet& ls) const ; 
-    void link(const WordForm& wf) ; 
+    void link(const WordForm& wf) const ; 
 };
 
 #endif	/* LETTERSET_HPP */

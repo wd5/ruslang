@@ -18,7 +18,7 @@ class WordFormStorage
 {
 private:
      static unsigned long ID_counter ;
-     WordForm*  lastAddedWordForm ;
+     const WordForm*  lastAddedWordForm ;
 public:
     set <WordForm> wfSet ;  
     WordFormStorage() ;

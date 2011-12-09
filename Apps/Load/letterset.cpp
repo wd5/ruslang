@@ -61,7 +61,7 @@ LetterSet::LetterSet(const LetterSet& ls)
     {
         wfLinkedCounter = ls.wfLinkedCounter ;
         wfLinked=(unsigned long*) std::malloc(sizeof(unsigned long)*wfLinkedCounter) ;
-        std::memcpy(wfLinked,wfLinkedCounter,sizeof(unsigned long)*wfLinkedCounter) ;
+        std::memcpy(wfLinked,ls.wfLinked,sizeof(unsigned long)*wfLinkedCounter) ;
     }
 }
 
@@ -103,7 +103,7 @@ bool LetterSet::operator<(const LetterSet& ls) const
     return false ; 
 }
 
-void LetterSet::link(const WordForm& wf) 
+void LetterSet::link(const WordForm& wf) const
 {
     unsigned int oldCounter=0 ;
     unsigned long oldWfLinked[256];
@@ -111,7 +111,7 @@ void LetterSet::link(const WordForm& wf)
     if(wfLinkedCounter>0)
     {
         // control [C-0001]: algorithm does not allow adding the same WordForm (by ID) to LetterSet
-        for(int i=0;i<wfLinkedCounter;i++)
+        for(unsigned int i=0;i<wfLinkedCounter;i++)
         {
             if(wfLinked[i]==wf.id)
             {
@@ -125,13 +125,13 @@ void LetterSet::link(const WordForm& wf)
         std::memcpy(oldWfLinked,wfLinked,sizeof(unsigned long)*oldCounter) ;
         std::free(wfLinked) ;
         wfLinkedCounter++ ;
-        wfLinked = std::malloc(sizeof(unsigned long)*wfLinkedCounter) ;
+        wfLinked = (unsigned long*) std::malloc(sizeof(unsigned long)*wfLinkedCounter) ;
         std::memcpy(wfLinked,oldWfLinked,sizeof(unsigned long)*oldCounter) ;
         wfLinked[wfLinkedCounter-1] = wf.id ;
     }
     else
     {
-        wfLinked = std::malloc(sizeof(unsigned long)*1) ;
+        wfLinked = (unsigned long*) std::malloc(sizeof(unsigned long)*1) ;
         wfLinkedCounter=1 ;
         wfLinked[0] = wf.id ;
     }

@@ -20,7 +20,7 @@ bool WordFormStorage::add(WordForm& wf)
     if(wfRetValue.second==false)
        // such wordform already exists in SET
         return false ;
-    lastAddedWordForm = wfRetValue.first ;
+    lastAddedWordForm = &(*wfRetValue.first) ;
     ID_counter++ ;
     return true ; 
 }

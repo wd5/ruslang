@@ -33,9 +33,14 @@ bool LetterSetStorage::add(const WordForm& wf)
     lsRetValue = lsSet.insert(ls) ;
     if(lsRetValue.second==false )
     {
-        lsRetValue.first->link(wf) ;
+        //LetterSet& existingLs = lsSet.find(*lsRetValue.first) ;
+        set<LetterSet>::iterator existingLs = lsSet.find(*lsRetValue.first) ;
+        existingLs->link(wf) ;
         return false ;
     }
+    // LetterSet& addedLs = lsSet.find(ls) ;
+    set<LetterSet>::iterator addedLs = lsSet.find(ls) ;
+    addedLs->link(wf) ;
     ID_counter++ ;
     return true ;
 }
