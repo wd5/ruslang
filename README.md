@@ -1,7 +1,7 @@
 License
 -------
 
-Copyright (c) 2011 Paul Asmuth
+Copyright (c) 2011 Victor Makarov
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
