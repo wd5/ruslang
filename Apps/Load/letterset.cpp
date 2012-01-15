@@ -116,7 +116,7 @@ void LetterSet::link(const WordForm& wf) const
             if(wfLinked[i]==wf.id)
             {
                 std::cerr << "unexpected [0x0010]: adding the same WordForm ID:" << wf.id << std::endl ;
-                exit(0) ;
+                std::exit(0) ;
             }
         }
         // end of control [C-0001]

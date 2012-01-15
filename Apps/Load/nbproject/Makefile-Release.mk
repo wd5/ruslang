@@ -21,7 +21,7 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=None-Windows
+CND_PLATFORM=Cygwin-Windows
 CND_CONF=Release
 CND_DISTDIR=dist
 CND_BUILDDIR=build
