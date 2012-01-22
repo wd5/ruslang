@@ -8,3 +8,8 @@ Data/Created/RussianWords_AllForms_Len_Accents_cp1251.txt
 Data/Created/*.txt
 Data/Created/RussianWords_AllForms_Len_Accents_cp1251.txt
 Apps/Load/load.exe.stackdump
+*.exe
+*.stackdump
+*.o
+*.a
+*.o.d
