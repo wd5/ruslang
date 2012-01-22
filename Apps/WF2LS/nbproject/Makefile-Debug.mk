@@ -22,7 +22,7 @@ AS=as
 
 # Macros
 CND_PLATFORM=Cygwin-Windows
-CND_CONF=Release
+CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
 
@@ -51,35 +51,35 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=../RuslangAPI/dist/Release/Cygwin-Windows/libruslangapi.a
+LDLIBSOPTIONS=../RuslangAPI/dist/Debug/Cygwin-Windows/libruslangapi.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load.exe
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/wf2ls.exe
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load.exe: ../RuslangAPI/dist/Release/Cygwin-Windows/libruslangapi.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/wf2ls.exe: ../RuslangAPI/dist/Debug/Cygwin-Windows/libruslangapi.a
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load.exe: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/wf2ls.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/wf2ls ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -Wall -I../RuslangAPI/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
-	cd ../RuslangAPI && ${MAKE}  -f Makefile CONF=Release
+	cd ../RuslangAPI && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load.exe
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/wf2ls.exe
 
 # Subprojects
 .clean-subprojects:
-	cd ../RuslangAPI && ${MAKE}  -f Makefile CONF=Release clean
+	cd ../RuslangAPI && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

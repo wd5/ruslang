@@ -34,15 +34,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/cyrillic/cp1251.o \
-	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/misctools.o \
-	${OBJECTDIR}/cyrillic/str_cp1251.o \
-	${OBJECTDIR}/wordform.o \
-	${OBJECTDIR}/lettersetstorage.o \
-	${OBJECTDIR}/letterset.o \
-	${OBJECTDIR}/wordformstorage.o \
-	${OBJECTDIR}/convert.o
+	${OBJECTDIR}/main.o
 
 
 # C Compiler Flags
@@ -59,63 +51,26 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=
+LDLIBSOPTIONS=../RuslangAPI/dist/Debug/Cygwin-Windows/libruslangapi.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load.exe
 
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load.exe: ../RuslangAPI/dist/Debug/Cygwin-Windows/libruslangapi.a
+
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/load ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/cyrillic/cp1251.o: cyrillic/cp1251.cpp 
-	${MKDIR} -p ${OBJECTDIR}/cyrillic
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/cyrillic/cp1251.o cyrillic/cp1251.cpp
-
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
-
-${OBJECTDIR}/misctools.o: misctools.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/misctools.o misctools.cpp
-
-${OBJECTDIR}/cyrillic/str_cp1251.o: cyrillic/str_cp1251.cpp 
-	${MKDIR} -p ${OBJECTDIR}/cyrillic
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/cyrillic/str_cp1251.o cyrillic/str_cp1251.cpp
-
-${OBJECTDIR}/wordform.o: wordform.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/wordform.o wordform.cpp
-
-${OBJECTDIR}/lettersetstorage.o: lettersetstorage.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/lettersetstorage.o lettersetstorage.cpp
-
-${OBJECTDIR}/letterset.o: letterset.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/letterset.o letterset.cpp
-
-${OBJECTDIR}/wordformstorage.o: wordformstorage.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/wordformstorage.o wordformstorage.cpp
-
-${OBJECTDIR}/convert.o: convert.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -g -Wall -MMD -MP -MF $@.d -o ${OBJECTDIR}/convert.o convert.cpp
+	$(COMPILE.cc) -g -Wall -I../RuslangAPI/include -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
+	cd ../RuslangAPI && ${MAKE}  -f Makefile CONF=Debug
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
@@ -124,6 +79,7 @@ ${OBJECTDIR}/convert.o: convert.cpp
 
 # Subprojects
 .clean-subprojects:
+	cd ../RuslangAPI && ${MAKE}  -f Makefile CONF=Debug clean
 
 # Enable dependency checking
 .dep.inc: .depcheck-impl

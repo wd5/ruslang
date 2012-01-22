@@ -12,7 +12,7 @@
 #include <sstream>
 #include <string>
 #include <time.h>
-#include "russian_chars.hpp" 
+#include "russian_chars.hpp"
 #include "cp1251.hpp"
 #include "misctools.h"
 #include "wordformstorage.hpp"

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="80">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <logicalFolder name="include" displayName="include" projectFiles="true">
+        <itemPath>include/codecvt_cp1251.hpp</itemPath>
+        <itemPath>include/codecvt_cp866.hpp</itemPath>
+        <itemPath>include/cp1251.hpp</itemPath>
+        <itemPath>include/letterset.hpp</itemPath>
+        <itemPath>include/lettersetstorage.hpp</itemPath>
+        <itemPath>include/mbwcvt.hpp</itemPath>
+        <itemPath>include/misctools.h</itemPath>
+        <itemPath>include/russian_chars.hpp</itemPath>
+        <itemPath>include/wordform.hpp</itemPath>
+        <itemPath>include/wordformstorage.hpp</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <logicalFolder name="src" displayName="src" projectFiles="true">
+        <logicalFolder name="cyrillic" displayName="cyrillic" projectFiles="true">
+          <itemPath>src/cyrillic/cp1251.cpp</itemPath>
+          <itemPath>src/cyrillic/str_cp1251.cpp</itemPath>
+        </logicalFolder>
+        <itemPath>src/convert.cpp</itemPath>
+        <itemPath>src/letterset.cpp</itemPath>
+        <itemPath>src/lettersetstorage.cpp</itemPath>
+        <itemPath>src/misctools.cpp</itemPath>
+        <itemPath>src/wordform.cpp</itemPath>
+        <itemPath>src/wordformstorage.cpp</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>include</Elem>
+    <Elem>src</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="3">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>Cygwin|Cygwin</compilerSet>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>include</pElem>
+          </incDir>
+        </ccTool>
+        <archiverTool>
+        </archiverTool>
+      </compileType>
+    </conf>
+    <conf name="Release" type="3">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>Cygwin|Cygwin</compilerSet>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <archiverTool>
+        </archiverTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>
