@@ -60,6 +60,18 @@
         <ccTool>
           <warningLevel>2</warningLevel>
         </ccTool>
+        <requiredProjects>
+          <makeArtifact PL="../StaticLib"
+                        CT="3"
+                        CN="Debug"
+                        AC="true"
+                        BL="false"
+                        WD="../StaticLib"
+                        BC="${MAKE}  -f Makefile CONF=Debug"
+                        CC="${MAKE}  -f Makefile CONF=Debug clean"
+                        OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libstaticlib.a">
+          </makeArtifact>
+        </requiredProjects>
       </compileType>
     </conf>
     <conf name="Release" type="1">
@@ -81,6 +93,18 @@
         <asmTool>
           <developmentMode>5</developmentMode>
         </asmTool>
+        <requiredProjects>
+          <makeArtifact PL="../StaticLib"
+                        CT="3"
+                        CN="Release"
+                        AC="false"
+                        BL="false"
+                        WD="../StaticLib"
+                        BC="${MAKE}  -f Makefile CONF=Release"
+                        CC="${MAKE}  -f Makefile CONF=Release clean"
+                        OP="${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libstaticlib.a">
+          </makeArtifact>
+        </requiredProjects>
       </compileType>
     </conf>
   </confs>
