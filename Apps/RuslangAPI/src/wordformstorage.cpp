@@ -6,9 +6,8 @@
  */
 
 #include <stdio.h>      // for ::save()
-#include "wordformstorage.hpp"
 #include <iterator>
-
+#include "wordformstorage.hpp"
 
 unsigned long WordFormStorage::ID_counter = 1 ;
 
@@ -24,6 +23,7 @@ bool WordFormStorage::add(WordForm& wf)
     ID_counter++ ;
     return true ; 
 }
+
 bool WordFormStorage::remove(const WordForm& wf)  
 {
     
@@ -67,6 +67,33 @@ void WordFormStorage::save (const char* filename) const
  
 }
 
+void WordFormStorage::load (const char* filename) 
+{
+    FILE* fin;
+    fin=fopen(filename,"r") ;
+    
+    WordForm wf ("",0);
+    unsigned long newWordID ;
+    char newWord[256] ;
+    int newWordLength=0;
+    
+    char newWordAccentBuffer[16] ;
+    short newWordAccents[ACCENT_ARRAY_SIZE] ;
+    int newWordAccentIndex=0;
+    for(newWordAccentIndex=0;newWordAccentIndex<ACCENT_ARRAY_SIZE;newWordAccentIndex++)  
+        newWordAccents[newWordAccentIndex]=0;
+    newWordAccentIndex=0 ;
+    
+    
+    while(!feof(fin))
+    {
+        fscanf(fin,"%ld;%s;%d;%s",&newWordID,newWord,&newWordLength,newWordAccentBuffer) ;
+        wf.reset(newWord,newWordLength,newWordAccents) ;
+        add(wf) ;
+    }
+
+    fclose(fin) ;
+} 
 const WordForm* WordFormStorage::lastAdded() const
 {
     return lastAddedWordForm ;

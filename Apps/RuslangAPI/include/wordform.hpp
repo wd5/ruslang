@@ -10,6 +10,7 @@
 
 #include <cstring>      // strlen
 #include <cstdlib>     // for malloc(), and free()
+#include "ruslang_common.hpp"
 #include "russian_chars.hpp" 
 #include "cp1251.hpp"
 
@@ -19,15 +20,16 @@ class WordForm
 private:
     static char _string[512] ;
 public:
-    char* word ;
+    INTERNAL_char* word ;
     int length ;
-    unsigned long id ;
+    ID_type id ;
     short accent [ACCENT_ARRAY_SIZE];        // 0 - unknown, some info is missing, some words have no vocals
     WordForm(const char* str)
     {
-        int len=std::strlen((const char*) str); 
-        word=(char*)std::malloc(sizeof(char)*len) ;
-        std::memcpy(word, str,len) ;
+        int len=std::strlen(str); 
+        word=(INTERNAL_char*)std::malloc(sizeof(INTERNAL_char)*len) ;
+        for(int i=0; i<len; i++)
+            word[i] = str[i] ;
         length=len ;
         resetAccent();
     }
@@ -37,14 +39,15 @@ public:
         resetAccent();
         for(int i=0;i<ACCENT_ARRAY_SIZE;i++)
                 accent[i]=wf.accent[i] ;
-        word=(char*)std::malloc(sizeof(char)*length) ;
-        std::memcpy(word, wf.word,sizeof(char)*length) ;
+        word=(INTERNAL_char*)std::malloc(sizeof(INTERNAL_char)*length) ;
+        std::memcpy(word, wf.word,sizeof(INTERNAL_char)*length) ;
         id=wf.id ;
     }
     WordForm(const char* str,int len)
     {
-        word=(char*)std::malloc(sizeof(char)*len) ;
-        std::memcpy(word,str,sizeof(char)*len) ;
+        word=(INTERNAL_char*)std::malloc(sizeof(INTERNAL_char)*len) ;
+        for(int i=0; i<len; i++)
+            word[i] = str[i] ;
         length=len ;
         resetAccent();
     }
@@ -74,19 +77,19 @@ public:
     }
     const char* str()
     {
-        std::memcpy(_string,word,length) ;
+        std::memcpy(_string,word,length) ; // !!! WARN : assumption sizeof(word)==sizeof(_string)
         _string[length]=0 ;
         return _string ;
     }
     char* str(char* s) const
     {
-        std::memcpy(s,word,length) ;
+        std::memcpy(s,word,length) ; // !!! WARN : assumption sizeof(word)==sizeof(s)
         s[length]=0 ;
         return s ;
     }
     const  char* wstr()
     {
-        std::memcpy(_string,word,length) ;
+        std::memcpy(_string,word,length) ; // !!! WARN : assumption sizeof(word)==sizeof(_string)
         _string[length]=0 ;
         return _string ;
     }

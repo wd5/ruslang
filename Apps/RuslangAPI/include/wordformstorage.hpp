@@ -24,10 +24,12 @@ public:
     WordFormStorage() ;
     ~WordFormStorage() ;
     bool add(WordForm& wf) ;
+
     bool remove(const WordForm& wf) ;
     void clear() ;
     unsigned long size() const ;
     void save (const char* filename) const ;
+    void load (const char* filename) ;
     const WordForm* lastAdded() const ;
 };
 

@@ -12,6 +12,7 @@
         <itemPath>include/lettersetstorage.hpp</itemPath>
         <itemPath>include/mbwcvt.hpp</itemPath>
         <itemPath>include/misctools.h</itemPath>
+        <itemPath>include/ruslang_common.hpp</itemPath>
         <itemPath>include/russian_chars.hpp</itemPath>
         <itemPath>include/wordform.hpp</itemPath>
         <itemPath>include/wordformstorage.hpp</itemPath>
@@ -33,6 +34,7 @@
         <itemPath>src/letterset.cpp</itemPath>
         <itemPath>src/lettersetstorage.cpp</itemPath>
         <itemPath>src/misctools.cpp</itemPath>
+        <itemPath>src/ruslang_common.cpp</itemPath>
         <itemPath>src/wordform.cpp</itemPath>
         <itemPath>src/wordformstorage.cpp</itemPath>
       </logicalFolder>

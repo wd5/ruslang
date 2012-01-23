@@ -16,16 +16,14 @@
 #include "cp1251.hpp"
 #include "misctools.h"
 #include "wordformstorage.hpp"
-#include "lettersetstorage.hpp"
+// #include "lettersetstorage.hpp"
 
 using namespace std;
 const char* inputAccentedWordsFileName = "d:/dev/RussianLanguage/Data/Collected/RussianWords_AllForms_Accents_86xxxBases_cp1251.txt" ;
 const char* inputMissingWordsFileName = "d:/dev/RussianLanguage/Data/Collected/RussianWords_AllForms_Accents_missing_cp1251.txt" ;
 const char* outputFileName = "d:/dev/RussianLanguage/Data/Created/RussianWords_AllForms_Len_Accents_cp1251.txt" ;
-const char* ScrabOutputFileName = "d:/dev/RussianLanguage/Data/Created/RussianWords_LetterSets_cp1251.txt" ; 
 
 WordFormStorage wfStorage ;
-LetterSetStorage lsStorage ;
 codepage1251 console ;
 
 /*
@@ -51,7 +49,6 @@ void parseLine (const char* line)
     newWordAccentIndex=0 ;
 
     WordForm wf ("",0);
-    LetterSet ls ("empty") ;
     
     for(int i=0;line[i]!='\r'&&line[i]!='\n'&&line[i]!='\0';i++)
     {
@@ -73,9 +70,6 @@ void parseLine (const char* line)
                             fprintf(noAccentFile,"%s\n",newWord); 
                             fclose(noAccentFile) ;
                         }
-                        
-                        ls.reset(newWord,newWordLength) ;
-                        lsStorage.add(ls) ;
                     }
                 }
                 
@@ -150,9 +144,6 @@ void parseLine (const char* line)
                 fprintf(noAccentFile,"%s\n",newWord); 
                 fclose(noAccentFile) ;
             }
-            //ls.reset(newWord,newWordLength) ;
-            //lsStorage.add(ls) ;
-            lsStorage.add(*wfStorage.lastAdded()) ;
         }
     }   
 }
@@ -170,12 +161,6 @@ int main(int argc, char** argv)
         while(fgets((char*)buffer,4096,fin))
         {
             parseLine(buffer) ;
-//            counter++; 
-//            if(counter%1000 ==0)
-//            {
-//                cout << "main debug: "<<counter << "/" << wfStorage.size() <<"/" << lsStorage.size() << endl ;
-//            // if(counter>2) exit(0) ;    
-//            }
         }
         
         //cout <<"Lines read: "<<counter<<endl ;
@@ -199,9 +184,6 @@ int main(int argc, char** argv)
     }
     cout << "Total word forms added: " << wfStorage.size() << endl ;
     wfStorage.save(outputFileName) ;
-    
-    cout << "Total sets of letters added: " << lsStorage.size() << endl ;
-    lsStorage.save(ScrabOutputFileName) ;
 
     clock_t endtime = clock() ;
     cout << "Execution time: " << (endtime-starttime)/CLOCKS_PER_SEC << "sec" << endl;

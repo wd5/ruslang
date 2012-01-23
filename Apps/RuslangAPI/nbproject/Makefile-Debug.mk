@@ -38,6 +38,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/cyrillic/cp1251.o \
 	${OBJECTDIR}/src/wordform.o \
 	${OBJECTDIR}/src/misctools.o \
+	${OBJECTDIR}/src/ruslang_common.o \
 	${OBJECTDIR}/src/cyrillic/str_cp1251.o \
 	${OBJECTDIR}/src/convert.o \
 	${OBJECTDIR}/src/letterset.o \
@@ -89,6 +90,11 @@ ${OBJECTDIR}/src/misctools.o: src/misctools.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Iinclude -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/misctools.o src/misctools.cpp
+
+${OBJECTDIR}/src/ruslang_common.o: src/ruslang_common.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.cc) -g -Iinclude -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/ruslang_common.o src/ruslang_common.cpp
 
 ${OBJECTDIR}/src/cyrillic/str_cp1251.o: src/cyrillic/str_cp1251.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src/cyrillic
