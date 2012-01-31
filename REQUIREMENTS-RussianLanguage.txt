@@ -1,0 +1,7 @@
+2012-02-01
+Development environment
+- Windows 7 ENG
+- NetBeans 7.1, java 1.6
+- cygwin: gcc, g++, make, gdb, boost 1_48
+- git: 1.7.8.msysgit.0. installed from GITHUB site
+- TortoiseGIT 1.7.6.0 GUI

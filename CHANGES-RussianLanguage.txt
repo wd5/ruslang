@@ -1,0 +1,5 @@
+2012-02-01 2:00
+- boost added via cygwin http://www.fischerlaender.net/development/using-boost-c-libraries-with-gcc-g-under-windows
+- created new project "find" from scratch. will support cmd line options, config files
+- added RapidXML to test XML parsing ot config files (not tested yet)
+
