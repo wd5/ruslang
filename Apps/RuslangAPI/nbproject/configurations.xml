@@ -12,6 +12,7 @@
         <itemPath>include/lettersetstorage.hpp</itemPath>
         <itemPath>include/mbwcvt.hpp</itemPath>
         <itemPath>include/misctools.h</itemPath>
+        <itemPath>D:/dev/RussianLanguage/Apps/RuslangAPI/include/rlist.hpp</itemPath>
         <itemPath>include/ruslang_common.hpp</itemPath>
         <itemPath>include/russian_chars.hpp</itemPath>
         <itemPath>include/wordform.hpp</itemPath>
@@ -25,19 +26,18 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="src" displayName="src" projectFiles="true">
-        <logicalFolder name="cyrillic" displayName="cyrillic" projectFiles="true">
-          <itemPath>src/cyrillic/cp1251.cpp</itemPath>
-          <itemPath>src/cyrillic/str_cp1251.cpp</itemPath>
-        </logicalFolder>
-        <itemPath>src/convert.cpp</itemPath>
-        <itemPath>src/letterset.cpp</itemPath>
-        <itemPath>src/lettersetstorage.cpp</itemPath>
-        <itemPath>src/misctools.cpp</itemPath>
-        <itemPath>src/ruslang_common.cpp</itemPath>
-        <itemPath>src/wordform.cpp</itemPath>
-        <itemPath>src/wordformstorage.cpp</itemPath>
+      <logicalFolder name="f1" displayName="cyrillic" projectFiles="true">
+        <itemPath>src/cyrillic/cp1251.cpp</itemPath>
+        <itemPath>src/cyrillic/str_cp1251.cpp</itemPath>
       </logicalFolder>
+      <itemPath>src/convert.cpp</itemPath>
+      <itemPath>src/letterset.cpp</itemPath>
+      <itemPath>src/lettersetstorage.cpp</itemPath>
+      <itemPath>src/misctools.cpp</itemPath>
+      <itemPath>D:/dev/RussianLanguage/Apps/RuslangAPI/src/rlist.cpp</itemPath>
+      <itemPath>src/ruslang_common.cpp</itemPath>
+      <itemPath>src/wordform.cpp</itemPath>
+      <itemPath>src/wordformstorage.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"

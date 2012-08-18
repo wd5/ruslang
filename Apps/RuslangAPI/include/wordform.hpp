@@ -95,7 +95,7 @@ public:
     }
     const char* str_cp866()
     {
-        return convert_str_cp1251_to_cp866(_string,word,length) ;
+        return convert_str_cp1251_to_cp866(_string,(const char*) word,length) ;
     }
     // bool operator==(const WordForm& wf) const ;
     bool operator<(const WordForm& wf) const ;
@@ -107,14 +107,14 @@ public:
         resetAccent();
         for(int i=0;i<ACCENT_ARRAY_SIZE;i++)
                 accent[i]=wf.accent[i] ;
-        word=(char*)std::malloc(sizeof(char)*length) ;
+        word=(INTERNAL_char*)std::malloc(sizeof(INTERNAL_char)*length) ;
         std::memcpy(word, wf.word,length) ;
         return *this ;
     }
     void reset( const char* str,int len, short acct[] )
     {
         std::free(word) ;
-        word=(char*)std::malloc(sizeof(char)*len) ;
+        word=(INTERNAL_char*)std::malloc(sizeof(INTERNAL_char)*len) ;
         std::memcpy(word,str,len) ;
         length=len ;
         resetAccent();

@@ -42,7 +42,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/cyrillic/str_cp1251.o \
 	${OBJECTDIR}/src/convert.o \
 	${OBJECTDIR}/src/letterset.o \
-	${OBJECTDIR}/src/wordformstorage.o
+	${OBJECTDIR}/src/wordformstorage.o \
+	${OBJECTDIR}/_ext/1772565911/rlist.o
 
 
 # C Compiler Flags
@@ -115,6 +116,11 @@ ${OBJECTDIR}/src/wordformstorage.o: src/wordformstorage.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.cc) -g -Iinclude -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/wordformstorage.o src/wordformstorage.cpp
+
+${OBJECTDIR}/_ext/1772565911/rlist.o: /cygdrive/D/dev/RussianLanguage/Apps/RuslangAPI/src/rlist.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1772565911
+	${RM} $@.d
+	$(COMPILE.cc) -g -Iinclude -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1772565911/rlist.o /cygdrive/D/dev/RussianLanguage/Apps/RuslangAPI/src/rlist.cpp
 
 # Subprojects
 .build-subprojects:

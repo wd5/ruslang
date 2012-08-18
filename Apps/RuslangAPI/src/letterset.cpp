@@ -67,7 +67,7 @@ LetterSet::LetterSet(const LetterSet& ls)
 
 LetterSet::LetterSet(const WordForm& wf ) 
 {
-    init(wf.word,wf.length) ;
+    init((const char*)wf.word,wf.length) ;
     link(wf) ;
 }
 
