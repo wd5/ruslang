@@ -13,3 +13,4 @@ Apps/Load/load.exe.stackdump
 *.o
 *.a
 *.o.d
+__pycache__
