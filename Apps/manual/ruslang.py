@@ -11,19 +11,25 @@ CREATED_DATA_DIR_PATH=SOURCE_DATA_DIR_PATH + r"\Created"
 RAW_ALL_FORMS_ACCENT_CP1251_FILE = COLLECTED_DATA_DIR_PATH + r"\RussianWords_AllForms_Accents_86xxxBases_cp1251.txt"
 ALL_FORMS_CP1251_FILE = CREATED_DATA_DIR_PATH + r"\python_AllForms_CP1251.txt"
 
-class wordForm:
+import re
+# an instance of a particular word form
+class WordForm:
 	def __init__(self,wf):
-		self.word=wf.replace("'","")
+		self.word=wf
+		self.word.replace("`","'") # normalize accent chars
+		self.accents=[m.start() for m in re.finditer("'",seld.word)]
+		self.word = notAccented()
 		self.len=len(self.word)
-		self.accents=[]
-		self.accents.append(wf.find("'")-1) # there can be more than 1 accent
+
 	def print(self):
 		print(self.word, self.len, self.accents)
+	def notAccented(self):
+		return self.word.replace("'","")
 
 	def equal(self,word):
 		if type(word) is str:
-			word = wordForm(word)
-		if type(word) is wordForm:
+			word = WordForm(word)
+		if type(word) is WordForm:
 			# type == wordForm
 			if self.len != word.len: return False
 			if self.word != word.word: return False
@@ -35,3 +41,7 @@ class wordForm:
 			return False
 		return False
 
+class InitialWordForm(WordForm):
+	def __init__(self,word,chastRechi=None):
+		WordForm.__init__(self,word)
+		self.chastRechi=chastRechi
