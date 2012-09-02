@@ -1,0 +1,41 @@
+TODO
+
+1. 	find all anagramms for a word-form
+1.1 	sort anagrams by "frequency of use"/popularity
+2. 	make up IDs for variables : 
+	anagram
+	chaset - set of characters with count from which a word if compound: e2f1r1 = free
+3. 	a dictionary with "sounds" - some chars which can be replaced: "d-t", "i-e" in non-accented
+4. 	professional vocabulary
+	character, letter, symbol
+	word (=lexical item), wordform
+	anagram	
+	fonogram
+	dictionary, vocabulary
+	accent
+	noun, verb, pre-verb, adjective, particle, names, caradinal numbers, interjection (araticle, exclamation), pronounm, preposition, adverb, conjunction
+	"initial form of a word" - nominal?
+	verb - infinitive, future, past, 
+	part of speech, word class, lexical class, lexical category
+	слог = ???
+	
+5. 	E-YO dependent/independant operations
+6.	Capital-small dependent/independant operations
+7.	First letter Capital-small dependent/independant operations
+8.	Accent dependent/independant operations
+9.	list of russian hot-humor words
+10.	extend volabulary with web-parsed words. func to walk around web pages and collect new words
+11.	func to walk around web, collect words, and count their populatiry
+12.	like1=for a given word, find all words which distinct from it by 1 letter (пилот -> полит...)
+13.	like2=for a given word, find all words which distinct from it by 1 missing letter (полет -> поле)
+14.	like3=for a given word, find all words which distinct from it by 1 extra letter (поле -> полет)
+15. 	like1_1 = found word is not a derivate from initial word in semantic respect
+16. 	like1_2 = found word from the same 'word class/lexical class'
+17. 	like1_3 = found word is NOT from the same 'word class/lexical class'
+18.	generate all word forms for an unknown/new/"not included in dict" word, based on the defined word: class and other attributes
+19.	add dates in name of the auto generating files
+20. 	check performance "if YO in word: replace YO/E" to "replace YO/E"
+
+
+
+DONE:

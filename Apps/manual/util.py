@@ -5,41 +5,21 @@
 
 import ruslang as rl
 
-
 plainWordInitialForms={}
 plainWordAllForms={}
 
 def removeAccents(w):
 	return w.replace("`","").replace("'","")
 
-def readRaw():
-	global plainWordInitialForms
-	plainWordInitialForms={}
-	global plainWordAllForms
-	plainWordAllForms={}
-
-	for line in open(rl.RAW_ALL_FORMS_ACCENT_CP1251_FILE,"r"):
-		line=line.rstrip('\n')
-		initialWord,wordForms = line.split('#')
-		iword =removeAccents(initialWord)
-		plainWordInitialForms[iword]=[]
-
-		for w in wordForms.split(','):
-			w=removeAccents(w)
-			if w in plainWordAllForms.keys():
-				plainWordAllForms[w].append(iword)
-			else:
-				plainWordAllForms[w] = [iword]
-			plainWordInitialForms[iword].append(w)
-
 # create full sent of non-accented word forms from the file
+# all words are lowercase
 def readRawPlain():
 	plainWordForms=set([])
-
 	for line in open(rl.RAW_ALL_FORMS_ACCENT_CP1251_FILE,"r"):
 		line=line.rstrip('\n')
 		initialWord,wordForms = line.split('#')
 		wordForms = removeAccents(wordForms)
+		wordForms = word.lower()
 
 		for w in wordForms.split(','):
 			plainWordForms.add(w)
@@ -53,7 +33,7 @@ def duplicateYOwords(dictSet):
 	for w in yoWords:
 		dictSet.add(w)
 
-def charCounter(w):
+def chaset(w):
 	cc={}
 	for c in w:
 		if c in cc.keys():
@@ -67,39 +47,45 @@ def charCounter(w):
 		result = result + c+str(cc[c])
 	return result
 
-def generateCharCounters(dict):
-	return {w:charCounter(w) for w in dict}
-
-def groupCharCounters(dict):
-	gcc = {}
+# group anagrams
+def groupAnagrams(dict):
+	anagrams = {}
 	for w in dict:
-		cc=charCounter(w)
-		if cc in gcc.keys():
-			gcc[cc].append(w)
+		cc=chaset(w)
+		if cc in anagrams.keys():
+			anagrams[cc].append(w)
 		else:
-			gcc[cc] = [w]
-	return gcc
+			anagrams[cc] = [w]
+	return anagrams
 
-# grouppedCharCounters
-def writeCharCounters(gcc):
-	gccSizes = {}   # sizes of groups
-	for cc in gcc.keys():
-		sz = len(gcc[cc])
-		if sz in gccSizes.keys():
-			gccSizes[sz].append(cc)
+def findAnagrams(anagrams,word):
+	chaset = chaset(word)
+	if chaset in anagrams.keys():
+		return anagrams[chaset(word)]
+	return [chaset]
+
+# save groupped anagrams
+# do not save words which do now have an anagram - single
+def writeAnagrams(anagrams):
+	anaSizes = {}   # sizes of groups
+	for cc in anagrams.keys():
+		sz = len(anagrams[cc])
+		if sz <= 1 : continue   # at least 2 words must exist for anagram
+		if sz in anaSizes.keys():
+			anaSizes[sz].append(cc)
 		else:
-			gccSizes[sz] = [cc]
-	szKeys = list(gccSizes.keys())
+			anaSizes[sz] = [cc]
+	szKeys = list(anaSizes.keys())
 	szKeys.sort(key=None,reverse=True)
 
-	size=len(gcc)
-	filename=rl.CREATED_DATA_DIR_PATH + "\char_counters_cp1251_"+str(size)+".txt"
-	f=open(filename,"w")
+	size=len(anagrams)
+	fname=filename(rl.CREATED_DATA_DIR_PATH + r"\anagrams_cp1251_"+str(size))
+	f=open(fname,"w")
 
 	for size in szKeys:
-		charCounterList = gccSizes[size]
-		for cc in charCounterList:
-			wordList = gcc[cc]
+		chasetList = anaSizes[size]
+		for cc in chasetList:
+			wordList = anagrams[cc]
 			wordList.sort()
 			f.write(cc+":"+",".join(wordList)+"\n")
 	f.close()
@@ -107,45 +93,55 @@ def writeCharCounters(gcc):
 def writeRawPlain(plainWordForms):
 	pwf = set(plainWordForms)
 	size=len(pwf)
-	filename=rl.CREATED_DATA_DIR_PATH + "\plain_word_forms_cp1251_"+str(size)+".txt"
-	f=open(filename,"w")
+	fname=filename(rl.CREATED_DATA_DIR_PATH + r"\plain_word_forms_cp1251_"+str(size))
+	f=open(fname,"w")
 	for w in pwf :
 		f.write(w+"\n")
 	f.close()
 
 def updateFiles():
+	print("Loading word worms file...",end="")
 	fullWordFormSet=readRawPlain()
-	duplicateYOwords(fullWordFormSet)
-	grouppedCharCounters = groupCharCounters(fullWordFormSet)
-	writeRawPlain(fullWordFormSet)
-	writeCharCounters(grouppedCharCounters)
+	print("done",end="\n")
 
+	print("Populating word form set with non-YO duplicates...",end="")
+	duplicateYOwords(fullWordFormSet)
+	print("done",end="\n")
+
+	print("Generating anagram's list...",end="")
+	grouppedAnagrams = groupAnagrams(fullWordFormSet)
+	print("done",end="\n")
+
+	print("Saving word forms...",end="")
+	writeRawPlain(fullWordFormSet)
+	print("done",end="\n")
+
+	print("Saving anagrams...",end="")
+	writeAnagrams(grouppedAnagrams)
+	print("done",end="\n")
+
+import time
+
+def filename(keyword):
+	dt = time.gmtime()
+	timePart = time.strftime("_%Y%m%d%H%M%S",dt)
+	return keyword + timePart + ".txt"
 
 ##if __name__ == '__main__':
 ##	readRaw()
 ##	print(len(plainWordInitialForms))
 ##	print(len(plainWordAllForms))
 
+def _testYO():
+	dt_test1_start=time.gmtime()
+	dt_test1_end=time.gmtime()
+	dt_test2_start=time.gmtime()
+	dt_test2_end=time.gmtime()
+	print("Test 1:", dt_test1_end-dt_test1_start)
+	print("Test 2:", dt_test2_end-dt_test2_start)
+
+
+
+
 if __name__ == '__main__':
 	updateFiles()
-
-
-wordInitialForms={} # string : [InitialWordForm()]
-wordAllForms={}     # string : []
-
-def readRaw2():
-	for line in open(rl.RAW_ALL_FORMS_ACCENT_CP1251_FILE,"r"):
-
-		initialWord,wordForms = line.split('#')
-
-		iWord = l.InitialWordForm(initialWord)
-
-		wordInitialForms[iWord.word]=[iWord]
-		for w in wordForms.split(','):
-			wf=rl.WordForm(w)
-			wordAllForms.add(w)
-
-		if initialWord in formDict :
-			pass
-		else:
-			formDict[initialWord] = wordForms.split(',')

@@ -3,6 +3,7 @@
 # created : 2012-08-30
 # last modified: 2012-08-30
 
+# Russian Chars in files are in CP1521
 # common shared variables
 SOURCE_DATA_DIR_PATH=r"..\..\Data"
 COLLECTED_DATA_DIR_PATH=SOURCE_DATA_DIR_PATH + r"\Collected"
