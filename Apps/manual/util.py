@@ -123,7 +123,7 @@ def updateFiles():
 import time
 
 def filename(keyword):
-	dt = time.gmtime()
+	dt = time.localtime()
 	timePart = time.strftime("_%Y%m%d%H%M%S",dt)
 	return keyword + timePart + ".txt"
 
