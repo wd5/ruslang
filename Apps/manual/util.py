@@ -142,6 +142,9 @@ def findLikesGlobal():
 			if len(likes) > 1:
 				file.write(w + "#" + ",".join(likes)+"\n")
 
+# create a form/set of chars for a real word
+# the form allows to match different words by 'sound like'
+# example: D is replaced with T => DATE will match TATE as well (if TATE existed)
 def soundUniform(w):
 	uw = w
 	uw = uw.replace('б','п')
@@ -150,9 +153,11 @@ def soundUniform(w):
 	uw = uw.replace('ж','ш')
 	uw = uw.replace('з','с')
 	uw = uw.replace('в','ф')
-
+	# to be continued: TSA = CA, CHIVO = CHEGO, NN = N, doubled consonant
 	return uw
 			
+# a dictionary of uniforms (unified word forms, unified by sound)
+# result is { 'uniform' : [wordform1, wordform2, ...] }
 def generateUnidict(dictSet):
 	unidict = {}
 	for w in dictSet:

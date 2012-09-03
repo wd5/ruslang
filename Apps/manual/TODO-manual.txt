@@ -11,6 +11,7 @@ TODO
 	word (=lexical item), wordform
 	anagram	
 	fonogram
+	unisound
 	dictionary, vocabulary
 	accent
 	noun, verb, pre-verb, adjective, particle, names, caradinal numbers, interjection (araticle, exclamation), pronounm, preposition, adverb, conjunction
@@ -19,6 +20,8 @@ TODO
 	part of speech, word class, lexical class, lexical category
 	слог = syllable
 	созвучный - consonant
+	гласная = vowel
+	согласная = consonant
 	
 5. 	E-YO dependent/independant operations
 6.	Capital-small dependent/independant operations
