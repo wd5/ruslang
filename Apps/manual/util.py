@@ -19,7 +19,7 @@ def readRawPlain():
 		line=line.rstrip('\n')
 		initialWord,wordForms = line.split('#')
 		wordForms = removeAccents(wordForms)
-		wordForms = word.lower()
+		wordForms = wordForms.lower()
 
 		for w in wordForms.split(','):
 			plainWordForms.add(w)
@@ -98,6 +98,50 @@ def writeRawPlain(plainWordForms):
 	for w in pwf :
 		f.write(w+"\n")
 	f.close()
+	
+# find words in dict that almost exactly match the word
+# lengths are equeal
+# 1 char can differ
+def findLikes1(dictSet,word):
+	words=[w for w in dictSet if len(w)==len(word)]
+	wset=set(word)
+	likes = set([])
+	for w in words:
+		if len(set(w)^wset) <=2:
+			miss=0
+			for i in range(0,len(word)):
+				if w[i] != word[i]: miss = miss+1
+			if miss <=1:
+				likes.add(w)
+	return likes
+	
+def findLikes1_sizeAware(wordsSized,word):
+	words=wordsSized
+	wLen=len(word)
+	wset=set(word)
+	likes = set([])
+	for w in words:
+		if len(set(w)^wset) <=2:
+			miss=0
+			for i in range(0,wLen):
+				if w[i] != word[i]: miss = miss+1
+			if miss <=1:
+				likes.add(w)
+	return likes
+	
+def findLikesGlobal():
+	fullDict = readRawPlain()
+	dict = {}
+	for wordLength in range(3,15):
+		dict[wordLength] = [w for w in fullDict if len(w)==wordLength]
+	
+	SIZE=4
+	with open (filename(rl.CREATED_DATA_DIR_PATH + r"\likes_cp1251_"+ str(SIZE)), "w") as file:
+		for w in dict[SIZE]:
+			likes = findLikes1_sizeAware(dict[SIZE],w)
+			if len(likes) > 1:
+				file.write(w + "#" + ",".join(likes)+"\n")
+		
 
 def updateFiles():
 	print("Loading word worms file...",end="")

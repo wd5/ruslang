@@ -35,7 +35,7 @@ TODO
 18.	generate all word forms for an unknown/new/"not included in dict" word, based on the defined word: class and other attributes
 19.	add dates in name of the auto generating files
 20. 	check performance "if YO in word: replace YO/E" to "replace YO/E"
-
-
+21.	raw data adapters: "read" adapters to extract data from external resources and organize them into internal formats
+22. internal formats: wordForm, lexical item attributes - extracted and calculated, canonical forms/normalized, nominal, initial
 
 DONE:
