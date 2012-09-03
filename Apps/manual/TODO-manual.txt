@@ -17,7 +17,8 @@ TODO
 	"initial form of a word" - nominal?
 	verb - infinitive, future, past, 
 	part of speech, word class, lexical class, lexical category
-	слог = ???
+	слог = syllable
+	созвучный - consonant
 	
 5. 	E-YO dependent/independant operations
 6.	Capital-small dependent/independant operations

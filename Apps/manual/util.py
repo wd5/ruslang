@@ -141,7 +141,36 @@ def findLikesGlobal():
 			likes = findLikes1_sizeAware(dict[SIZE],w)
 			if len(likes) > 1:
 				file.write(w + "#" + ",".join(likes)+"\n")
-		
+
+def soundUniform(w):
+	uw = w
+	uw = uw.replace('б','п')
+	uw = uw.replace('г','к')
+	uw = uw.replace('д','т')
+	uw = uw.replace('ж','ш')
+	uw = uw.replace('з','с')
+	uw = uw.replace('в','ф')
+
+	return uw
+			
+def generateUnidict(dictSet):
+	unidict = {}
+	for w in dictSet:
+		uw = soundUniform(w)
+		if uw in unidict.keys() :
+			unidict[uw].append(w)
+		else:
+			unidict[uw] = [w]
+	return unidict
+	
+# short version of Uniform Dict - remove all instances which have no consonant
+def removeSingleUniform(unidict):
+	return {key:unidict[key] for key in list(unidict.keys()) if len(unidict[key])>1 }
+	
+def findConsonant(dictSet,word):
+	# words=[w for w in dictSet if len(w)==len(word)]	# not exactly as somtimes 2-chars and 1-char sounds can match
+	pass
+	
 
 def updateFiles():
 	print("Loading word worms file...",end="")
