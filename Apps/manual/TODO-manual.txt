@@ -41,5 +41,9 @@ TODO
 20. 	check performance "if YO in word: replace YO/E" to "replace YO/E"
 21.	raw data adapters: "read" adapters to extract data from external resources and organize them into internal formats
 22. internal formats: wordForm, lexical item attributes - extracted and calculated, canonical forms/normalized, nominal, initial
+23. find all fonogramms for one wf
+24. for a given word: find all words which differ by one missing char. пастель-патель
+25. add Names of peoples, Geo objects, Astro obj, etc, famraceutic, sience terms, - 
+26. 
 
 DONE:

@@ -30,8 +30,7 @@ def duplicateYOwords(dictSet):
 	for w in dictSet:
 		if 'ё' in w:
 			yoWords.add(w.replace('ё','е'))
-	for w in yoWords:
-		dictSet.add(w)
+	dictSet.update(yoWords)
 
 def chaset(w):
 	cc={}
