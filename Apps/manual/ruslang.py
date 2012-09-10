@@ -34,7 +34,7 @@ GENERATEDFORMS_CP1251_FILE = CREATED_DATA_DIR_PATH + r"\dict_generatedforms_r1.t
 
 # all new wordforms go through this file. being manually and automatically analyzed and put to final files
 # class OperationalWordForm is saved here
-ALLFORMS_OPERATIONAL_CP1251_FILE = REATED_DATA_DIR_PATH + r"\dict_operational_r1.txt"	
+ALLFORMS_OPERATIONAL_CP1251_FILE = CREATED_DATA_DIR_PATH + r"\dict_operational_r1.txt"	
 
 import re
 
@@ -54,9 +54,10 @@ class OperationalWordForm:
 	def __init__(self,original=""):
 		self.originalForm=original
 		self.word=self.notAccented()
-		self.findAccentes()
+		self.sterelizedWord = self.word
+		self.findAccents()
 		
-	def initFromDump():
+	def initFromDump(self,dumpString):
 		pass
 	
 	def strForDump():
@@ -114,3 +115,40 @@ class InitialWordForm(WordForm):
 	def __init__(self,word,chastRechi=None):
 		WordForm.__init__(self,word)
 		self.chastRechi=chastRechi
+
+		
+import time
+import os
+
+def backupFilename(filename):
+	dt = time.localtime()
+	timePart = time.strftime("%Y%m%d%H%M%S",dt)
+	return filename.replace(".txt","_"+timePart+".txt")
+		
+#
+# operDict is "dictionary" object of a format
+# { "word" : [OperationalWordForm(), OperationalWordForm(),...] }
+# where the key "word" is sterelized word form: without accent, capitalized, etc 
+# and OperationalWordForm - attributed object, with attrs which are determined from line in Oper file
+# there can be several OperWF per key word, then can differ in pat of speach, worm, ...
+#
+def LoadOperational():
+	operDict = {}
+	for line in open(ALLFORMS_OPERATIONAL_CP1251_FILE):
+		wf=OperationalWordForm()
+		wf.initFromDump(line)
+		if wf.sterelizedWord in operDict.keys():
+			operDict[wf.sterelizedWord].append(wf)
+		else:
+			operDict[wf.sterelizedWord] = [wf]
+	return operDict
+
+def SaveOperational(operDict):
+	# backup existing Operational File
+	os.rename(ALLFORMS_OPERATIONAL_CP1251_FILE,backupFilename(ALLFORMS_OPERATIONAL_CP1251_FILE))
+	file = open(ALLFORMS_OPERATIONAL_CP1251_FILE,"w")
+	for word in operDict.keys():
+		for operwf in operDict[word]:
+			file.write(operwf.strForDump() + '\n')
+	file.close()
+
