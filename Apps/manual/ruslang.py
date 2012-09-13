@@ -49,18 +49,49 @@ class OperationalWordForm:
 		return self.originalForm.replace("'","").replace("`","")
 		
 	def findAccents(self): #dummy yet
-		self.accents = []
+		self.accents=[]
+		numOfAccents=0
+		for i in range(0,len(self.originalForm)):
+			if self.originalForm[i] in "'`":
+				self.accents.append(i-numOfAccents)
+				numOfAccents += 1		# CHAR position in string shifts with accents inside
+		return self.accents
 
 	def __init__(self,original=""):
 		self.originalForm=original
 		self.word=self.notAccented()
-		self.sterelizedWord = self.word
+		self.sterelizedWord = self.word[:]
 		self.findAccents()
 		
+		
+	def _getAttributes(self,attributes):
+		print("debug: test")
+		for attrPair in attributes.split(';'):
+			print("debug: attrpair:" + str(attrPair)) 
+			attr,val=attrPair.split('=')
+			if attr == "part" :
+				self.partOfSpeech=val
+			else: 
+				if attr=="acc":
+					self.accents=val.split(',')
+				else:
+					print ("[MAJOR] Operational::getAttrib: word [<not implemented>]: unrecognized attribute[" + attr+"] value ["+val+"]")
+				
+		
 	def initFromDump(self,dumpString):
-		pass
+		res = dumpString.split('#')
+		self.originalForm=res[0]
+		if len(res)>1:
+			self.word=res[1]
+			if len(res)>2:
+				self._getAttributes(res[2])
+			else:
+				pass
+		else:
+			self.word=self.notAccented()
+			self.accents = self.findAccents()
 	
-	def strForDump():
+	def strForDump(self):
 		dumpString=self.word + "#"+ self.originalForm + "#" + ",".join(self.accents)
 		if hasattr(self,'partOfSpeech'):
 			dumpString = dumpString + ";" + self.partOfSpeech

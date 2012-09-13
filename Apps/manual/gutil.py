@@ -24,6 +24,11 @@ class Gutil:
 	def aboutCallback(self):
 		self.dummyCallback()
 
+	def _createCell(self,tForm,line,wf=0):
+		Label(tForm,text="слово").grid(row=line,column=0)
+		Label(tForm,text="x").grid(row=line,column=1)
+		Label(tForm,text="y").grid(row=line,column=2)
+		
 	def _createAnalysisForm(self):	
 		self.analysisForm=Frame(self.rootTk)
 		self.analysisForm.pack(fill=BOTH,padx=10)
@@ -39,21 +44,13 @@ class Gutil:
 		tableForm = Frame(self.analysisForm)
 		tableForm.grid(row=2,column=0,columnspan=5)
 		
-		Label(tableForm,text="слово").grid(row=0,column=0)
-		Label(tableForm,text="x").grid(row=0,column=1)
-		Label(tableForm,text="y").grid(row=0,column=2)
-		
-		Label(tableForm,text="слово").grid(row=1,column=0)
-		Label(tableForm,text="x").grid(row=1,column=1)
-		Label(tableForm,text="y").grid(row=1,column=2)
-		
-		Label(tableForm,text="слово").grid(row=2,column=0)
-		Label(tableForm,text="x").grid(row=2,column=1)
-		Label(tableForm,text="y").grid(row=2,column=2)
-		
+		self._createCell(tableForm,0)
+		self._createCell(tableForm,1)
+		self._createCell(tableForm,2)
+		self._createCell(tableForm,3)
+		self._createCell(tableForm,4)
+		self._createCell(tableForm,5)
 
-		
-		
 		return self.analysisForm
 		
 	def statusUpdate(self,newStatus):
