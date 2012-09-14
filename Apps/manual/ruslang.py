@@ -47,33 +47,34 @@ class OperationalWordForm:
 
 	def notAccented(self):
 		return self.originalForm.replace("'","").replace("`","")
-		
-	def findAccents(self): #dummy yet
-		self.accents=[]
-		numOfAccents=0
-		for i in range(0,len(self.originalForm)):
-			if self.originalForm[i] in "'`":
-				self.accents.append(i-numOfAccents)
-				numOfAccents += 1		# CHAR position in string shifts with accents inside
-		return self.accents
+
+	def findAccents(self):
+		acc = [m.start() for m in re.finditer("'",self.originalForm.replace('ё','ё\'').replace('Ё','Ё\''))]
+		if acc :
+			self.accents = acc
+
+#		self.accents=[]
+#		numOfAccents=0
+#		for i in range(0,len(self.originalForm)):
+#			if self.originalForm[i] in "'`":
+#				self.accents.append(i-numOfAccents)
+#				numOfAccents += 1		# CHAR position in string shifts with accents inside
+#		return self.accents
 
 	def __init__(self,original=""):
-		self.originalForm=original
+		self.originalForm=original.replace("`","'") # normalize accent chars
 		self.word=self.notAccented()
-		self.sterelizedWord = self.word[:]
+		self.sterilizedWord = self.word[:]
 		self.findAccents()
 		
-		
 	def _getAttributes(self,attributes):
-		print("debug: test")
 		for attrPair in attributes.split(';'):
-			print("debug: attrpair:" + str(attrPair)) 
 			attr,val=attrPair.split('=')
 			if attr == "part" :
 				self.partOfSpeech=val
 			else: 
 				if attr=="acc":
-					self.accents=val.split(',')
+					self.accents=[ int(num) for num in val.split(',') ]
 				else:
 					print ("[MAJOR] Operational::getAttrib: word [<not implemented>]: unrecognized attribute[" + attr+"] value ["+val+"]")
 				
@@ -83,19 +84,24 @@ class OperationalWordForm:
 		self.originalForm=res[0]
 		if len(res)>1:
 			self.word=res[1]
+			self.sterilizedWord = self.word.lower()
 			if len(res)>2:
-				self._getAttributes(res[2])
+				if res[2]:	# check for emptiness
+					self._getAttributes(res[2])
 			else:
 				pass
 		else:
 			self.word=self.notAccented()
-			self.accents = self.findAccents()
+			self.sterilizedWord = self.word.lower()
+			self.findAccents()
 	
 	def strForDump(self):
-		dumpString=self.word + "#"+ self.originalForm + "#" + ",".join(self.accents)
+		dumpString=self.originalForm + "#" + self.word + "#"
+		if hasattr(self,'accents'):
+			dumpString += "acc="+",".join(str(x) for x in self.accents)
 		if hasattr(self,'partOfSpeech'):
-			dumpString = dumpString + ";" + self.partOfSpeech
-		
+			dumpString += ";part=" + self.partOfSpeech
+		pass
 		return dumpString
 
 	def setPart(self,part):
@@ -103,16 +109,18 @@ class OperationalWordForm:
 			self.partOfSpeech=part
 		else:
 			raise NonExistingPartOfSpeech
-		
-
 
 # an instance of a particular word form
 class WordForm:
+
+	def findAccents(self):
+		return [m.start() for m in re.finditer("'", self.word)]
+
 	def __init__(self,wf):
 		self.word=wf
 		self.word.replace("`","'") # normalize accent chars
-		self.accents=[m.start() for m in re.finditer("'",self.word)]
-		self.word = notAccented()
+		self.accents=self.findAccents()
+		self.word = self.notAccented()
 		self.len=len(self.word)
 
 	def print(self):
@@ -133,7 +141,7 @@ class WordForm:
 		else:
 			print("error 0001: class wordForm/equal()/unexpected type of WORD parameter")
 			return False
-		return False
+
 	# prepare and retunr string which contains all attributes of the word form
 	def formatForDump(self):
 		return "not defined"
@@ -143,9 +151,9 @@ class WordForm:
 			
 
 class InitialWordForm(WordForm):
-	def __init__(self,word,chastRechi=None):
+	def __init__(self,word,partOfSpeech=None):
 		WordForm.__init__(self,word)
-		self.chastRechi=chastRechi
+		self.partOfSpeech=partOfSpeech
 
 		
 import time
@@ -157,21 +165,22 @@ def backupFilename(filename):
 	return filename.replace(".txt","_"+timePart+".txt")
 		
 #
-# operDict is "dictionary" object of a format
-# { "word" : [OperationalWordForm(), OperationalWordForm(),...] }
-# where the key "word" is sterelized word form: without accent, capitalized, etc 
+# operDict is dictionary object of a format
+# { word : [OperationalWordForm(), OperationalWordForm(),...] }
+# where the key "word" is sterilized word form: without accent, capitalized, etc
 # and OperationalWordForm - attributed object, with attrs which are determined from line in Oper file
 # there can be several OperWF per key word, then can differ in pat of speach, worm, ...
 #
 def LoadOperational():
 	operDict = {}
 	for line in open(ALLFORMS_OPERATIONAL_CP1251_FILE):
+		line=line.strip('\n')
 		wf=OperationalWordForm()
 		wf.initFromDump(line)
-		if wf.sterelizedWord in operDict.keys():
-			operDict[wf.sterelizedWord].append(wf)
+		if wf.sterilizedWord in operDict.keys():
+			operDict[wf.sterilizedWord].append(wf)
 		else:
-			operDict[wf.sterelizedWord] = [wf]
+			operDict[wf.sterilizedWord] = [wf]
 	return operDict
 
 def SaveOperational(operDict):

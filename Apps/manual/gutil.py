@@ -56,8 +56,9 @@ class Gutil:
 	def statusUpdate(self,newStatus):
 		self.statusbar['text'] = newStatus
 	
-	def loadRawWordForms(self):
-		if self.allFormsOperationalLoaded == True : return
+	def loadRawWordForms(self,forceLoad=False):
+		if not forceLoad and self.allFormsOperationalLoaded:
+			return
 		self.statusUpdate("Загрузка необработанных словоформ... ждите")
 		self.operational = ruslang.LoadOperational() 
 		self.statusUpdate("Необработанные словоформы загружены")
@@ -65,11 +66,12 @@ class Gutil:
 		
 	def switchToAnalyzeRawWordForms(self):
 		self.currentForm.destroy()
-		self.loadRawWordForms()
+		self.loadRawWordForms(forceLoad=True)
 		self.currentForm = self._createAnalysisForm()
 	
 	def saveCurrentChanges(self):
-		pass
+		ruslang.SaveOperational(self.operational)
+
 
 	def _createMenu(self):
 		menu=Menu(self.rootTk)
@@ -136,7 +138,7 @@ class Gutil:
 		pass
 		
 	def run(self):
-		self.rootTk.mainloop() ;
+		self.rootTk.mainloop()
 
 
 
@@ -146,5 +148,5 @@ def run():
 	gu.run()
 
 
-#if __name__ == "__main__":
-#	run()
+if __name__ == "__main__":
+	run()
