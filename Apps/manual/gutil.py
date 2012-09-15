@@ -6,6 +6,13 @@
 
 from tkinter import *
 import ruslang
+import random
+
+DEFAULT_WORD_MASK="*"
+GUTIL_WINDOW_MIN_WIDTH=500
+GUTIL_WINDOW_MIN_HEIGHT=900
+GUTIL_ANALYSIS_ONSCREEN_WORDS=30
+
 
 class Gutil:
 
@@ -24,32 +31,85 @@ class Gutil:
 	def aboutCallback(self):
 		self.dummyCallback()
 
-	def _createCell(self,tForm,line,wf=0):
-		Label(tForm,text="слово").grid(row=line,column=0)
-		Label(tForm,text="x").grid(row=line,column=1)
-		Label(tForm,text="y").grid(row=line,column=2)
-		
+	def _createCell(self,tForm,word,line):
+		Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0)
+		# TODO: below labels should be check box of attributes from dictionary
+		Label(tForm,text="x",width=3).grid(row=line,column=1)
+		Label(tForm,text="y",width=3).grid(row=line,column=2)
+
+	def _fillTable(self,tableForm, mask=DEFAULT_WORD_MASK):
+		# TODO: table need headers
+		# TODO: table need to be dynamic
+		k = list(self.operational.keys())
+		klen = len(k)
+		random.shuffle(k)
+		# TODO: convert "* ? " template to regural expression
+		if mask == DEFAULT_WORD_MASK or mask == "":
+			for i in range(0,GUTIL_ANALYSIS_ONSCREEN_WORDS):
+				if i<klen:
+					self._createCell(tableForm,k[i],i)
+		else:
+			if mask.startswith(DEFAULT_WORD_MASK):
+				mask=mask.replace(DEFAULT_WORD_MASK,"")
+				cnt=0
+				for i in range(0,klen):
+					if k[i].endswith(mask):
+						self._createCell(tableForm,k[i],i)
+						cnt+=1
+						if cnt >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
+							return
+			else:
+				if mask.endswith(DEFAULT_WORD_MASK):
+					mask=mask.replace(DEFAULT_WORD_MASK,"")
+					cnt=0
+					for i in range(0,klen):
+						if k[i].startswith(mask):
+							self._createCell(tableForm,k[i],i)
+							cnt+=1
+							if cnt >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
+								return
+
+
+	def _refreshWordList(self):
+		self.tableForm.destroy()
+		self.tableForm = Frame(self.analysisForm)
+		self.tableForm.grid(row=2,column=0,columnspan=5)
+		self._fillTable(self.tableForm,mask=self.analysisMask.get())
+
+	def maskEnterCallback(self,event):
+		self._refreshWordList()
+
+	def _createMaskEntry(self,form):
+		mask=Entry(form,width=20)
+		mask.delete(0, END)
+		mask.insert(0, DEFAULT_WORD_MASK)
+		mask.focus_set()
+		mask.bind('<Return>', self.maskEnterCallback)
+		return mask
+
 	def _createAnalysisForm(self):	
 		self.analysisForm=Frame(self.rootTk)
 		self.analysisForm.pack(fill=BOTH,padx=10)
-		
+
 		Label(self.analysisForm,text="Анализ словоформ",fg="blue",anchor=W,height=2).grid(row=0,column=0)
-		
+
 		entryForm = Frame(self.analysisForm)
 		entryForm.grid(row=1,column=0,columnspan=5)
+
+		# 1.
 		Label(entryForm,text="Шаблон:").pack(side=LEFT)
-		Entry(entryForm,width=20).pack(side=LEFT)
-		Button(entryForm,text="Обновить").pack(side=LEFT)
-		
-		tableForm = Frame(self.analysisForm)
-		tableForm.grid(row=2,column=0,columnspan=5)
-		
-		self._createCell(tableForm,0)
-		self._createCell(tableForm,1)
-		self._createCell(tableForm,2)
-		self._createCell(tableForm,3)
-		self._createCell(tableForm,4)
-		self._createCell(tableForm,5)
+
+		# 2.
+		self.analysisMask = self._createMaskEntry(entryForm)
+		self.analysisMask.pack(side=LEFT)
+
+		# 3.
+		Button(entryForm,text="Обновить",command=self._refreshWordList).pack(side=LEFT)
+
+		# 4.
+		self.tableForm = Frame(self.analysisForm)
+		self.tableForm.grid(row=2,column=0,columnspan=5)
+		self._fillTable(self.tableForm)
 
 		return self.analysisForm
 		
@@ -122,12 +182,13 @@ class Gutil:
 		
 	def __init__(self):
 		self.rootTk = Tk()
-		self.rootTk.minsize(500, 500)
+		self.rootTk.minsize(GUTIL_WINDOW_MIN_WIDTH,GUTIL_WINDOW_MIN_HEIGHT)
 		self.rootTk.title("Словооборот")
 		self.rootTk.wm_iconbitmap('ruslang.ico')
 		self.rootTk.protocol('WM_DELETE_WINDOW', self.callbackWindowDeleted)
 		
 		self._createMenu()
+		# TODO: create tool bar with icons
 		self._createStatusBar()
 		self.currentForm=self._createInitForm()
 		

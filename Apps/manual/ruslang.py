@@ -39,6 +39,13 @@ ALLFORMS_OPERATIONAL_CP1251_FILE = CREATED_DATA_DIR_PATH + r"\dict_operational_r
 import re
 
 possiblePartsOfSpeech = {"u","a","n","av","v","pn","p","c","i","nu","pa"}
+RUSSIAN_VOWELS={'а','е','ё','и','о','у','ы','э','ю','я'}
+RUSSIAN_CONSONANTS={'б','в','г','д','ж','з','й','к','л','м','н','п','р','с','т','ф','ц','ч','ш','щ','ъ','ь'}
+RUSSIAN_VOICED_CONSONANTS={'б','в','г','д','ж','з','л','м','н','р'}
+RUSSIAN_VOICELESS_CONSONANTS={'к','л','м','н','п','р','с','т','ф','ц','ч','ш','щ'}
+RUSSIAN_PAIRS_VOICED_VOICELESS={'б':'п','в':'ф','г':'к','ж':'ш','з':'с'}
+RUSSIAN_PAIRS_VOICELESS_VOICED={'п':'б','ф':'в','к':'г','ш':'ж','с':'з'}
+
 class NonExistingPartOfSpeech(Exception):
 	pass
 
@@ -48,7 +55,9 @@ class OperationalWordForm:
 	def notAccented(self):
 		return self.originalForm.replace("'","").replace("`","")
 
+	# this function should only be called for newly added words due it's high load to CPU
 	def findAccents(self):
+		# todo: words with single vowels must have accent assigned automatically
 		acc = [m.start() for m in re.finditer("'",self.originalForm.replace('ё','ё\'').replace('Ё','Ё\''))]
 		if acc :
 			self.accents = acc
@@ -70,14 +79,16 @@ class OperationalWordForm:
 	def _getAttributes(self,attributes):
 		for attrPair in attributes.split(';'):
 			attr,val=attrPair.split('=')
+		# TODO: if else if else looks ugly, reformat to "switch"-like form
 			if attr == "part" :
 				self.partOfSpeech=val
 			else: 
 				if attr=="acc":
 					self.accents=[ int(num) for num in val.split(',') ]
 				else:
+					# TODO: test non existing parameters from  dict
 					print ("[MAJOR] Operational::getAttrib: word [<not implemented>]: unrecognized attribute[" + attr+"] value ["+val+"]")
-				
+	# TODO: extend number of recognized parameters
 		
 	def initFromDump(self,dumpString):
 		res = dumpString.split('#')
@@ -91,6 +102,7 @@ class OperationalWordForm:
 			else:
 				pass
 		else:
+			# evidences are that this is newly added word, extracting all possible info from it
 			self.word=self.notAccented()
 			self.sterilizedWord = self.word.lower()
 			self.findAccents()
@@ -177,6 +189,7 @@ def LoadOperational():
 		line=line.strip('\n')
 		wf=OperationalWordForm()
 		wf.initFromDump(line)
+		# todo: keyword is sterilized word. can match several different original forms. change ID to something "word:1" to have plain array
 		if wf.sterilizedWord in operDict.keys():
 			operDict[wf.sterilizedWord].append(wf)
 		else:
