@@ -25,6 +25,18 @@ def readRawPlain():
 			plainWordForms.add(w)
 	return plainWordForms
 
+# same as readRawPlain() but does not remove accents and does not cange the case
+# accepts words as they are
+def readRawPlain2():
+	plainWordForms=set([])
+	for line in open(rl.RAW_ALL_FORMS_ACCENT_CP1251_FILE,"r"):
+		line=line.rstrip('\n')
+		initialWord,wordForms = line.split('#')
+
+		for w in wordForms.split(','):
+			plainWordForms.add(w)
+	return plainWordForms
+
 def duplicateYOwords(dictSet):
 	yoWords = set([])
 	for w in dictSet:
@@ -197,6 +209,12 @@ def updateFiles():
 	writeAnagrams(grouppedAnagrams)
 	print("done",end="\n")
 
+def createPlainWordFile():
+	fullWordFormSet=readRawPlain2()
+	writeRawPlain(fullWordFormSet)
+
+
+
 import time
 
 def filename(keyword):
@@ -217,8 +235,5 @@ def _testYO():
 	print("Test 1:", dt_test1_end-dt_test1_start)
 	print("Test 2:", dt_test2_end-dt_test2_start)
 
-
-
-
 if __name__ == '__main__':
-	updateFiles()
+	createPlainWordFile()

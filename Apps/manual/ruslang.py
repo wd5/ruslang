@@ -39,81 +39,131 @@ ALLFORMS_OPERATIONAL_CP1251_FILE = CREATED_DATA_DIR_PATH + r"\dict_operational_r
 import re
 
 possiblePartsOfSpeech = {"u","a","n","av","v","pn","p","c","i","nu","pa"}
-RUSSIAN_VOWELS={'а','е','ё','и','о','у','ы','э','ю','я'}
-RUSSIAN_CONSONANTS={'б','в','г','д','ж','з','й','к','л','м','н','п','р','с','т','ф','ц','ч','ш','щ','ъ','ь'}
+
+# Russian letters
+RUSSIAN_SMALL_LETTERS={'а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','ъ','ы','ь','э','ю','я'}
+RUSSIAN_CAPITAL_LETTERS={'А','Б','В','Г','Д','Е','Ё','Ж','З','И','Й','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Щ','Ъ','Ы','Ь','Э','Ю','Я'}
+RUSSIAN_LETTERS=RUSSIAN_SMALL_LETTERS | RUSSIAN_CAPITAL_LETTERS
+
+
+RUSSIAN_SMALL_VOWELS={'а','е','ё','и','о','у','ы','э','ю','я'}
+RUSSIAN_CAPITAL_VOWELS={'А','Е','Ё','И','О','У','Ы','Э','Ю','Я'}
+RUSSIAN_VOWELS=RUSSIAN_SMALL_VOWELS | RUSSIAN_CAPITAL_VOWELS
+
+RUSSIAN_SMALL_CONSONANTS={'б','в','г','д','ж','з','й','к','л','м','н','п','р','с','т','ф','х','ц','ч','ш','щ','ъ','ь'}
+RUSSIAN_CAPITAL_CONSONANTS={'Б','В','Г','Д','Ж','З','Й','К','Л','М','Н','П','Р','С','Т','Ф','Х','Ц','Ч','Ш','Щ','Ъ','Ь'}
+RUSSIAN_CONSONANTS=RUSSIAN_SMALL_CONSONANTS | RUSSIAN_CAPITAL_CONSONANTS
+
 RUSSIAN_VOICED_CONSONANTS={'б','в','г','д','ж','з','л','м','н','р'}
-RUSSIAN_VOICELESS_CONSONANTS={'к','л','м','н','п','р','с','т','ф','ц','ч','ш','щ'}
+RUSSIAN_VOICELESS_CONSONANTS={'к','л','м','н','п','р','с','т','ф','х','ц','ч','ш','щ'}
 RUSSIAN_PAIRS_VOICED_VOICELESS={'б':'п','в':'ф','г':'к','ж':'ш','з':'с'}
 RUSSIAN_PAIRS_VOICELESS_VOICED={'п':'б','ф':'в','к':'г','ш':'ж','с':'з'}
 
 class NonExistingPartOfSpeech(Exception):
 	pass
 
+# clear
+def notAccented(word):
+	return word.replace("'","")
+
+# make all Accents chars to be _'_, not _`_, not other
+def unifyAccents(word):
+	return word.replace("`","'")
+
+def countVowels(word):
+	vowelCnt=0
+	for c in word:
+		if c in RUSSIAN_VOWELS: vowelCnt += 1
+	return vowelCnt
+
+def findAccents(word):
+	vowelChars = countVowels(word)
+	if vowelChars == 0 : # only consonants in the word, no accents
+		accents = [0]
+	elif vowelChars == 1: # single vowel, accent exists and the position can be calculated
+		# we see a single-vowel word, but do not change it if no accents is placed in original form
+		# just create "accents" attribute to reflect this
+		vowelIndex=1
+		for c in word:
+			if c in RUSSIAN_VOWELS:
+				accents = [vowelIndex]
+				break
+			vowelIndex += 1
+	else: # multiple vowels, only marked ' and ` accents can be extracted from the word or yoYO - always accented
+		# todo: words with only YO inside can have accents in other positions, this is not being calculating now
+		word=word.replace('ё','ё\'').replace('Ё','Ё\'').replace("''","'")
+		accents = [m.start() for m in re.finditer("'",word)]
+	return accents
+
+def getAttributes(attributes,options):
+	for attrPair in attributes.split(';'):
+		attr,val=attrPair.split('=')
+		if attr == "part" :
+			options[attr] = val
+		elif attr=="acc":
+			options[attr]=[ int(num) for num in val.split(',') ]
+		# TODO: extend number of recognized parameters
+		else:
+			# TODO: test non existing parameters from dict
+			print ("[MAJOR] Operational::getAttributes: word [<not implemented>]: unrecognized attribute[" + attr+"] value ["+val+"]")
+
+	return options
 
 class OperationalWordForm:
 
-	def notAccented(self):
-		return self.originalForm.replace("'","").replace("`","")
+	def __init__(self,options):
+		for param in options.keys():
+			if param == "orig":
+				self.originalForm = options[param]
+			elif param == "word":
+				self.word = options[param]
+			elif param == 'steril':
+				self.sterilizedWord = options[param]
+			elif param == 'acc':
+				self.accents = options[param]
+			elif param == 'part':
+				self.partOfSpeech = options[param]
+			else:
+				print ("[MAJOR] Operational::__init__: unrecognized internal option[" + param+"] value ["+options[param]+"]")
 
-	# this function should only be called for newly added words due it's high load to CPU
-	def findAccents(self):
-		# todo: words with single vowels must have accent assigned automatically
-		acc = [m.start() for m in re.finditer("'",self.originalForm.replace('ё','ё\'').replace('Ё','Ё\''))]
-		if acc :
-			self.accents = acc
+	@classmethod
+	def fromString(cls,stringData):
+		options={}
+		options['orig']=stringData.replace("`","'")
+		options['word']=notAccented(options['orig'])
+		options['steril']=options['word'][:]
+		accents = findAccents(options['orig'])
+		if accents :
+			options['acc']= accents
+		return cls(options)
 
-#		self.accents=[]
-#		numOfAccents=0
-#		for i in range(0,len(self.originalForm)):
-#			if self.originalForm[i] in "'`":
-#				self.accents.append(i-numOfAccents)
-#				numOfAccents += 1		# CHAR position in string shifts with accents inside
-#		return self.accents
-
-	def __init__(self,original=""):
-		self.originalForm=original.replace("`","'") # normalize accent chars
-		self.word=self.notAccented()
-		self.sterilizedWord = self.word[:]
-		self.findAccents()
-		
-	def _getAttributes(self,attributes):
-		for attrPair in attributes.split(';'):
-			attr,val=attrPair.split('=')
-		# TODO: if else if else looks ugly, reformat to "switch"-like form
-			if attr == "part" :
-				self.partOfSpeech=val
-			else: 
-				if attr=="acc":
-					self.accents=[ int(num) for num in val.split(',') ]
-				else:
-					# TODO: test non existing parameters from  dict
-					print ("[MAJOR] Operational::getAttrib: word [<not implemented>]: unrecognized attribute[" + attr+"] value ["+val+"]")
-	# TODO: extend number of recognized parameters
-		
-	def initFromDump(self,dumpString):
+	@classmethod
+	def fromDump(cls,dumpString):
+		options={}
 		res = dumpString.split('#')
-		self.originalForm=res[0]
+		options['orig']=res[0]
 		if len(res)>1:
-			self.word=res[1]
-			self.sterilizedWord = self.word.lower()
+			options['word']=res[1]
+			options['steril'] = res[1].lower()
 			if len(res)>2:
 				if res[2]:	# check for emptiness
-					self._getAttributes(res[2])
+					getAttributes(res[2],options)
 			else:
 				pass
 		else:
 			# evidences are that this is newly added word, extracting all possible info from it
-			self.word=self.notAccented()
-			self.sterilizedWord = self.word.lower()
-			self.findAccents()
-	
+			return OperationalWordForm.fromString(dumpString)
+		return cls(options)
+
 	def strForDump(self):
 		dumpString=self.originalForm + "#" + self.word + "#"
 		if hasattr(self,'accents'):
-			dumpString += "acc="+",".join(str(x) for x in self.accents)
+			if self.accents:
+				dumpString += "acc="+",".join(str(x) for x in self.accents)
+			else:
+				print ("[MAJOR] Operational::strForDump: empty accent list for word ["+self.originalForm+"]")
 		if hasattr(self,'partOfSpeech'):
 			dumpString += ";part=" + self.partOfSpeech
-		pass
 		return dumpString
 
 	def setPart(self,part):
@@ -149,7 +199,6 @@ class WordForm:
 			if self.word != word.word: return False
 			if self.accents != word.accents: return False
 			return True
-			pass
 		else:
 			print("error 0001: class wordForm/equal()/unexpected type of WORD parameter")
 			return False
@@ -167,7 +216,6 @@ class InitialWordForm(WordForm):
 		WordForm.__init__(self,word)
 		self.partOfSpeech=partOfSpeech
 
-		
 import time
 import os
 
@@ -175,7 +223,8 @@ def backupFilename(filename):
 	dt = time.localtime()
 	timePart = time.strftime("%Y%m%d%H%M%S",dt)
 	return filename.replace(".txt","_"+timePart+".txt")
-		
+
+# todo: what is documentation for functions, how to create them, format?
 #
 # operDict is dictionary object of a format
 # { word : [OperationalWordForm(), OperationalWordForm(),...] }
@@ -187,8 +236,7 @@ def LoadOperational():
 	operDict = {}
 	for line in open(ALLFORMS_OPERATIONAL_CP1251_FILE):
 		line=line.strip('\n')
-		wf=OperationalWordForm()
-		wf.initFromDump(line)
+		wf=OperationalWordForm.fromDump(line)
 		# todo: keyword is sterilized word. can match several different original forms. change ID to something "word:1" to have plain array
 		if wf.sterilizedWord in operDict.keys():
 			operDict[wf.sterilizedWord].append(wf)
@@ -204,4 +252,8 @@ def SaveOperational(operDict):
 		for operwf in operDict[word]:
 			file.write(operwf.strForDump() + '\n')
 	file.close()
+
+import cProfile
+def runProfiler():
+	cProfile.run('LoadOperational()','LoadOperation_profile.txt')
 

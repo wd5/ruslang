@@ -8,10 +8,14 @@ from tkinter import *
 import ruslang
 import random
 
-DEFAULT_WORD_MASK="*"
+MASK_ANY_NUMBER_OF_CHARS="*"
+MASK_ANY_SINGLE_CHAR = "?"
+DEFAULT_WORD_MASK=MASK_ANY_NUMBER_OF_CHARS
 GUTIL_WINDOW_MIN_WIDTH=500
 GUTIL_WINDOW_MIN_HEIGHT=900
 GUTIL_ANALYSIS_ONSCREEN_WORDS=30
+
+
 
 
 class Gutil:
@@ -33,13 +37,20 @@ class Gutil:
 
 	def _createCell(self,tForm,word,line):
 		Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0)
-		# TODO: below labels should be check box of attributes from dictionary
+		# TODO: below labels should be radio box of attributes from dictionary 1.: part of speech
+
 		Label(tForm,text="x",width=3).grid(row=line,column=1)
 		Label(tForm,text="y",width=3).grid(row=line,column=2)
 
 	def _fillTable(self,tableForm, mask=DEFAULT_WORD_MASK):
+		if ( (not MASK_ANY_NUMBER_OF_CHARS in mask) and (not MASK_ANY_SINGLE_CHAR in mask)):
+			if mask in self.operational.keys():
+				self._createCell(tableForm,mask,0)
+			else:
+				self._createCell(tableForm,"слово ["+mask+"] не найдено",0)
+
 		# TODO: table need headers
-		# TODO: table need to be dynamic
+		# TODO: table need to be dynamic: part of speech, sex if any
 		k = list(self.operational.keys())
 		klen = len(k)
 		random.shuffle(k)
@@ -48,26 +59,25 @@ class Gutil:
 			for i in range(0,GUTIL_ANALYSIS_ONSCREEN_WORDS):
 				if i<klen:
 					self._createCell(tableForm,k[i],i)
+		elif mask.startswith(DEFAULT_WORD_MASK):
+			mask=mask.replace(DEFAULT_WORD_MASK,"")
+			cnt=0
+			for i in range(0,klen):
+				if k[i].endswith(mask):
+					self._createCell(tableForm,k[i],i)
+					cnt+=1
+					if cnt >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
+						return
 		else:
-			if mask.startswith(DEFAULT_WORD_MASK):
+			if mask.endswith(DEFAULT_WORD_MASK):
 				mask=mask.replace(DEFAULT_WORD_MASK,"")
 				cnt=0
 				for i in range(0,klen):
-					if k[i].endswith(mask):
+					if k[i].startswith(mask):
 						self._createCell(tableForm,k[i],i)
 						cnt+=1
 						if cnt >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
 							return
-			else:
-				if mask.endswith(DEFAULT_WORD_MASK):
-					mask=mask.replace(DEFAULT_WORD_MASK,"")
-					cnt=0
-					for i in range(0,klen):
-						if k[i].startswith(mask):
-							self._createCell(tableForm,k[i],i)
-							cnt+=1
-							if cnt >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
-								return
 
 
 	def _refreshWordList(self):
@@ -102,6 +112,9 @@ class Gutil:
 		# 2.
 		self.analysisMask = self._createMaskEntry(entryForm)
 		self.analysisMask.pack(side=LEFT)
+
+		# 2.5 TODO: need entry field for word length: num = exactly, num1-num2 - between num1 and num2, empty or incorrect syntax - any
+
 
 		# 3.
 		Button(entryForm,text="Обновить",command=self._refreshWordList).pack(side=LEFT)
