@@ -15,9 +15,6 @@ GUTIL_WINDOW_MIN_WIDTH=500
 GUTIL_WINDOW_MIN_HEIGHT=900
 GUTIL_ANALYSIS_ONSCREEN_WORDS=30
 
-
-
-
 class Gutil:
 
 	def callbackWindowDeleted(self):
@@ -42,49 +39,102 @@ class Gutil:
 		Label(tForm,text="x",width=3).grid(row=line,column=1)
 		Label(tForm,text="y",width=3).grid(row=line,column=2)
 
-	def _fillTable(self,tableForm, mask=DEFAULT_WORD_MASK):
+	def _passLengthCriteria(self,wordLength,fixLength,minLength,maxLength):
+		if fixLength == 0 :
+			if minLength==0 and maxLength==0:
+				return True
+			else:
+				if minLength<=wordLength<=maxLength :
+					return True
+				else:
+					return False
+		else:
+			if wordLength == fixLength:
+				return True
+			else:
+				return False
+		return True
+
+	def _fillTable(self,tableForm, mask=DEFAULT_WORD_MASK, length=""):
 		if ( (not MASK_ANY_NUMBER_OF_CHARS in mask) and (not MASK_ANY_SINGLE_CHAR in mask)):
 			if mask in self.operational.keys():
 				self._createCell(tableForm,mask,0)
 			else:
 				self._createCell(tableForm,"слово ["+mask+"] не найдено",0)
+		fixLength=0
+		minLength=0
+		maxLength=0
+		if "-" in length:
+			# range of length defined
+			minLength,maxLength = length.split('-')
+			try:
+				minLength = int(minLength)
+				maxLength = int(maxLength)
+				fixLength=0
+				if maxLength<minLength:
+					minLength=0
+					maxLength=0
+					self.statusUpdate("!!! Значение поля длины слова игнорировано: max<min")
+				else:
+					self.statusUpdate("")
+
+			except ValueError:
+				minLength=0
+				maxLength=0
+				length=0
+				self.statusUpdate("!!! Значение поля длины слова игнорировано: некорректный формат min или max")
+		else:
+			# exact length of the word defined
+			try:
+				fixLength=int(length)
+				self.statusUpdate("")
+			except ValueError:
+				fixLength=0
+				minLength=0
+				maxLength=0
+				self.statusUpdate("!!! Значение поля длины слова игнорировано, нецифровое значение длины слова")
 
 		# TODO: table need headers
 		# TODO: table need to be dynamic: part of speech, sex if any
 		k = list(self.operational.keys())
-		klen = len(k)
+		kLen = len(k)
 		random.shuffle(k)
 		# TODO: convert "* ? " template to regural expression
 		if mask == DEFAULT_WORD_MASK or mask == "":
-			for i in range(0,GUTIL_ANALYSIS_ONSCREEN_WORDS):
-				if i<klen:
-					self._createCell(tableForm,k[i],i)
+			row=0
+			for i in range(0,kLen):
+				if self._passLengthCriteria(len(k[i]),fixLength,minLength,maxLength):
+					self._createCell(tableForm,k[i],row)
+					row += 1
+					if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
+						return
+
 		elif mask.startswith(DEFAULT_WORD_MASK):
+			# todo: try "RE" here - will it improve performance?
 			mask=mask.replace(DEFAULT_WORD_MASK,"")
-			cnt=0
-			for i in range(0,klen):
-				if k[i].endswith(mask):
-					self._createCell(tableForm,k[i],i)
-					cnt+=1
-					if cnt >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
+			row=0
+			for i in range(0,kLen):
+				if k[i].endswith(mask) and self._passLengthCriteria(len(k[i]),fixLength,minLength,maxLength):
+					self._createCell(tableForm,k[i],row)
+					row+=1
+					if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
 						return
 		else:
 			if mask.endswith(DEFAULT_WORD_MASK):
 				mask=mask.replace(DEFAULT_WORD_MASK,"")
-				cnt=0
-				for i in range(0,klen):
-					if k[i].startswith(mask):
-						self._createCell(tableForm,k[i],i)
-						cnt+=1
-						if cnt >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
+				row=0
+				for i in range(0,kLen):
+					if k[i].startswith(mask) and self._passLengthCriteria(len(k[i]),fixLength,minLength,maxLength):
+						self._createCell(tableForm,k[i],row)
+						row+=1
+						if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
 							return
-
 
 	def _refreshWordList(self):
 		self.tableForm.destroy()
 		self.tableForm = Frame(self.analysisForm)
 		self.tableForm.grid(row=2,column=0,columnspan=5)
-		self._fillTable(self.tableForm,mask=self.analysisMask.get())
+		self._fillTable(self.tableForm,mask=self.analysisMask.get(),length=self.lengthMask.get())
 
 	def maskEnterCallback(self,event):
 		self._refreshWordList()
@@ -96,6 +146,11 @@ class Gutil:
 		mask.focus_set()
 		mask.bind('<Return>', self.maskEnterCallback)
 		return mask
+
+	def _createLengthEntry(self,form):
+		length=Entry(form,width=6)
+		length.bind('<Return>', self.maskEnterCallback)
+		return length
 
 	def _createAnalysisForm(self):	
 		self.analysisForm=Frame(self.rootTk)
@@ -114,7 +169,8 @@ class Gutil:
 		self.analysisMask.pack(side=LEFT)
 
 		# 2.5 TODO: need entry field for word length: num = exactly, num1-num2 - between num1 and num2, empty or incorrect syntax - any
-
+		self.lengthMask = self._createLengthEntry(entryForm)
+		self.lengthMask.pack(side=LEFT)
 
 		# 3.
 		Button(entryForm,text="Обновить",command=self._refreshWordList).pack(side=LEFT)
