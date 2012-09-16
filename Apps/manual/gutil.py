@@ -53,7 +53,6 @@ class Gutil:
 				return True
 			else:
 				return False
-		return True
 
 	def _fillTable(self,tableForm, mask=DEFAULT_WORD_MASK, length=""):
 		if ( (not MASK_ANY_NUMBER_OF_CHARS in mask) and (not MASK_ANY_SINGLE_CHAR in mask)):

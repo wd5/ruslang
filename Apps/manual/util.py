@@ -70,10 +70,10 @@ def groupAnagrams(dict):
 	return anagrams
 
 def findAnagrams(anagrams,word):
-	chaset = chaset(word)
-	if chaset in anagrams.keys():
-		return anagrams[chaset(word)]
-	return [chaset]
+	lchaset = chaset(word)
+	if lchaset in anagrams.keys():
+		return anagrams[lchaset(word)]
+	return [lchaset]
 
 # save groupped anagrams
 # do not save words which do now have an anagram - single
