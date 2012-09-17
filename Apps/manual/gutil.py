@@ -7,13 +7,23 @@
 from tkinter import *
 import ruslang
 import random
+import re
 
 MASK_ANY_NUMBER_OF_CHARS="*"
 MASK_ANY_SINGLE_CHAR = "?"
 DEFAULT_WORD_MASK=MASK_ANY_NUMBER_OF_CHARS
-GUTIL_WINDOW_MIN_WIDTH=500
+GUTIL_WINDOW_MIN_WIDTH=1000
 GUTIL_WINDOW_MIN_HEIGHT=900
 GUTIL_ANALYSIS_ONSCREEN_WORDS=30
+
+def compileCompareOperator(mask):
+	if mask=="": mask = DEFAULT_WORD_MASK
+	# todo: bug ru.match('членский','ч???ск?*й') ==	True
+	return re.compile("^" + mask.replace('?','.').replace('*','.*') + "$")
+
+def match(word,comparator):
+	if comparator.search(word)==None: return False
+	else: return True
 
 class Gutil:
 
@@ -32,13 +42,6 @@ class Gutil:
 	def aboutCallback(self):
 		self.dummyCallback()
 
-	def _createCell(self,tForm,word,line):
-		Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0)
-		# TODO: below labels should be radio box of attributes from dictionary 1.: part of speech
-
-		Label(tForm,text="x",width=3).grid(row=line,column=1)
-		Label(tForm,text="y",width=3).grid(row=line,column=2)
-
 	def _passLengthCriteria(self,wordLength,fixLength,minLength,maxLength):
 		if fixLength == 0 :
 			if minLength==0 and maxLength==0:
@@ -54,18 +57,13 @@ class Gutil:
 			else:
 				return False
 
-	def _fillTable(self,tableForm, mask=DEFAULT_WORD_MASK, length=""):
-		if ( (not MASK_ANY_NUMBER_OF_CHARS in mask) and (not MASK_ANY_SINGLE_CHAR in mask)):
-			if mask in self.operational.keys():
-				self._createCell(tableForm,mask,0)
-			else:
-				self._createCell(tableForm,"слово ["+mask+"] не найдено",0)
+	def _parseLengthMask(self,lengthMask):
 		fixLength=0
 		minLength=0
 		maxLength=0
-		if "-" in length:
+		if "-" in lengthMask:
 			# range of length defined
-			minLength,maxLength = length.split('-')
+			minLength,maxLength = lengthMask.split('-')
 			try:
 				minLength = int(minLength)
 				maxLength = int(maxLength)
@@ -80,60 +78,130 @@ class Gutil:
 			except ValueError:
 				minLength=0
 				maxLength=0
-				length=0
+				lengthMask=0
 				self.statusUpdate("!!! Значение поля длины слова игнорировано: некорректный формат min или max")
+		elif lengthMask == "":
+			fixLength=0
+			minLength=0
+			maxLength=0
 		else:
 			# exact length of the word defined
 			try:
-				fixLength=int(length)
+				fixLength=int(lengthMask)
 				self.statusUpdate("")
 			except ValueError:
 				fixLength=0
 				minLength=0
 				maxLength=0
 				self.statusUpdate("!!! Значение поля длины слова игнорировано, нецифровое значение длины слова")
+		return fixLength,minLength,maxLength
+
+	def _createColumnTitle(self,tForm,title,col):
+		Label(tForm,text=title,bg='grey',relief=SUNKEN,bd=1).grid(row=0,column=col,sticky=W+E)
+
+	def _createTitle(self,tableForm):
+		col=0
+		self._createColumnTitle(tableForm,"Слово",col=col); col+=1
+		self._createColumnTitle(tableForm,"Номинал",col=col); col+=1
+		self._createColumnTitle(tableForm,"Часть речи",col=col); col+=1
+
+	def _createTableRow(self,tForm,word,line):
+		Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0,columnspan=3)
+
+	def _createTableRowFromDictItem(self,tForm,dictItem,line):
+		Label(tForm,text=dictItem.word,width=30,anchor=E).grid(row=line,column=0)
+		nominalCellForm = Frame(tForm)
+		nominalCellForm.grid(row=line,column=1)
+
+		# todo: link to real value in [dictItem]: dictItem.nominal
+		nominalVar = StringVar()
+		# todo: select default value does not work
+		nominalVar.set("0")
+		nominals=[
+			("да","y"),
+			("нет","n"),
+			("?","0")
+		]
+		for lbl,val in nominals:
+			Radiobutton(nominalCellForm,text=lbl,variable=nominalVar,value=val,indicatoron=0,width=2).pack(side=LEFT)
+
+		partCellForm = Frame(tForm)
+		partCellForm.grid(row=line,column=2)
+		# todo: link to real value in [dictItem]: dictItem.partsOfSpeech
+		partVar = StringVar()
+		# todo: select default value does not work
+		partVar.set("0")
+		partsOfSpeech = [
+			("сущ","n"),
+			("прил","a"),
+			("глаг","v"),
+			("нареч","av"),
+			("предл","p"),
+			("местоим","pn"),
+			("междом","i"),
+			("союз","c"),
+			("частица","pa"),
+			("числ","nu"),
+			("неизв","u"),
+			("?","0")
+			]
+		for lbl,val in partsOfSpeech:
+			Radiobutton(partCellForm,text=lbl,variable=partVar,value=val,indicatoron=0,width=6).pack(side=LEFT)
+
+	def _fillTable(self,tableForm, mask=DEFAULT_WORD_MASK, lengthMask="",shuffle=False):
+		row=0
+		self._createTitle(tableForm)
+
+		row+=1
+		if ((not MASK_ANY_NUMBER_OF_CHARS in mask) and (not MASK_ANY_SINGLE_CHAR in mask)):
+			# no mask special chars means exact word match. ignoring length.
+			if mask in self.operational.keys():
+				# todo: must list not only [0] element but all matching [mask]
+				self._createTableRowFromDictItem(tableForm,self.operational[mask][0],row);	row+=1
+			else:
+				self._createTableRow(tableForm,"слово ["+mask+"] не найдено",row);	row+=1
+			return
+
+		fixLength,minLength,maxLength=self._parseLengthMask(lengthMask)
 
 		# TODO: table need headers
 		# TODO: table need to be dynamic: part of speech, sex if any
 		k = list(self.operational.keys())
 		kLen = len(k)
-		random.shuffle(k)
-		# TODO: convert "* ? " template to regural expression
+		# TODO: no need to shuffle every time, expecialy when exact match is requested
+		if shuffle:	random.shuffle(k)
+
 		if mask == DEFAULT_WORD_MASK or mask == "":
-			row=0
+			# no char mask, only LENGTH is counted
 			for i in range(0,kLen):
 				if self._passLengthCriteria(len(k[i]),fixLength,minLength,maxLength):
-					self._createCell(tableForm,k[i],row)
-					row += 1
+					# todo: must list not only [0] element but all matching k[i]
+					self._createTableRowFromDictItem(tableForm,self.operational[k[i]][0],row); row += 1
 					if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
-						return
-
-		elif mask.startswith(DEFAULT_WORD_MASK):
-			# todo: try "RE" here - will it improve performance?
-			mask=mask.replace(DEFAULT_WORD_MASK,"")
-			row=0
-			for i in range(0,kLen):
-				if k[i].endswith(mask) and self._passLengthCriteria(len(k[i]),fixLength,minLength,maxLength):
-					self._createCell(tableForm,k[i],row)
-					row+=1
-					if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
-						return
+						break
 		else:
-			if mask.endswith(DEFAULT_WORD_MASK):
-				mask=mask.replace(DEFAULT_WORD_MASK,"")
-				row=0
-				for i in range(0,kLen):
-					if k[i].startswith(mask) and self._passLengthCriteria(len(k[i]),fixLength,minLength,maxLength):
-						self._createCell(tableForm,k[i],row)
-						row+=1
-						if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
-							return
+			comparator=compileCompareOperator(mask)
+			for i in range(0,kLen):
+				if self._passLengthCriteria(len(k[i]),fixLength,minLength,maxLength) and comparator.match(k[i]) :
+					# todo: must list not only [0] element but all matching k[i]
+					self._createTableRowFromDictItem(tableForm,self.operational[k[i]][0],row); row+=1
+					if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
+						break
+		if row <=1 :	# only title was printed
+			self._createTableRow(tableForm,"по шаблону ["+mask+"] ничего не найдено",0)
 
 	def _refreshWordList(self):
 		self.tableForm.destroy()
 		self.tableForm = Frame(self.analysisForm)
 		self.tableForm.grid(row=2,column=0,columnspan=5)
-		self._fillTable(self.tableForm,mask=self.analysisMask.get(),length=self.lengthMask.get())
+		self._fillTable(self.tableForm,mask=self.analysisMask.get(), lengthMask=self.lengthMask.get())
+
+	def _shuffleWordList(self):
+		self.tableForm.destroy()
+		self.tableForm = Frame(self.analysisForm)
+		self.tableForm.grid(row=2,column=0,columnspan=5)
+		self._fillTable(self.tableForm,mask=self.analysisMask.get(), lengthMask=self.lengthMask.get(),shuffle=True)
+
 
 	def maskEnterCallback(self,event):
 		self._refreshWordList()
@@ -155,10 +223,10 @@ class Gutil:
 		self.analysisForm=Frame(self.rootTk)
 		self.analysisForm.pack(fill=BOTH,padx=10)
 
-		Label(self.analysisForm,text="Анализ словоформ",fg="blue",anchor=W,height=2).grid(row=0,column=0)
+		Label(self.analysisForm,text="Анализ словоформ",fg="blue",anchor=W,height=2).grid(row=0,column=0,sticky=W)
 
 		entryForm = Frame(self.analysisForm)
-		entryForm.grid(row=1,column=0,columnspan=5)
+		entryForm.grid(row=1,column=0,columnspan=5,sticky=W)
 
 		# 1.
 		Label(entryForm,text="Шаблон:").pack(side=LEFT)
@@ -171,8 +239,13 @@ class Gutil:
 		self.lengthMask = self._createLengthEntry(entryForm)
 		self.lengthMask.pack(side=LEFT)
 
+		# 2.6 todo: match words in dict with YO with E in mask
+
 		# 3.
 		Button(entryForm,text="Обновить",command=self._refreshWordList).pack(side=LEFT)
+
+		# 3.5
+		Button(entryForm,text="Встряхнуть",command=self._shuffleWordList).pack(side=LEFT)
 
 		# 4.
 		self.tableForm = Frame(self.analysisForm)

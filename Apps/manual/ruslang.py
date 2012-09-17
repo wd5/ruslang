@@ -109,6 +109,8 @@ def getAttributes(attributes,options):
 
 	return options
 
+
+
 class OperationalWordForm:
 
 	def __init__(self,options):
