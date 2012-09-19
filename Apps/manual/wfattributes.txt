@@ -1,4 +1,11 @@
 значение "0" у параметра означает, что по этому параметру не проверялось
+	"0" = not checked manualy
+
+номинал: nominal/indefinite/... : nom
+	y = yes
+	n = no
+	"0" = not checked manually
+
 часть речи: part of speech: part
 	u = unknown 
 	a = прилагательное  adjective

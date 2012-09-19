@@ -123,7 +123,9 @@ class Gutil:
 			("?","0")
 		]
 		for lbl,val in nominals:
-			Radiobutton(nominalCellForm,text=lbl,variable=nominalVar,value=val,indicatoron=0,width=2).pack(side=LEFT)
+			rb=Radiobutton(nominalCellForm,text=lbl,variable=nominalVar,value=val,indicatoron=0,width=2)
+			rb.pack(side=LEFT)
+
 
 		partCellForm = Frame(tForm)
 		partCellForm.grid(row=line,column=2)
