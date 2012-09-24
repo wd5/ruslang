@@ -113,26 +113,35 @@ class Gutil:
 		nominalCellForm = Frame(tForm)
 		nominalCellForm.grid(row=line,column=1)
 
-		# todo: link to real value in [dictItem]: dictItem.nominal
 		nominalVar = StringVar()
+		# todo: link to real value in [dictItem]: dictItem.nominal
+		if hasattr(dictItem,'nominal'):
+			pass
+		else:
+			dictItem.nominal = "0"
+		nominalVar.set(dictItem.nominal)
+
 		# todo: select default value does not work
-		nominalVar.set("0")
 		nominals=[
 			("да","y"),
 			("нет","n"),
 			("?","0")
 		]
 		for lbl,val in nominals:
-			rb=Radiobutton(nominalCellForm,text=lbl,variable=nominalVar,value=val,indicatoron=0,width=2)
+			rb=Radiobutton(nominalCellForm,text=lbl,variable=nominalVar,indicatoron=0, value=val)
 			rb.pack(side=LEFT)
-
 
 		partCellForm = Frame(tForm)
 		partCellForm.grid(row=line,column=2)
 		# todo: link to real value in [dictItem]: dictItem.partsOfSpeech
 		partVar = StringVar()
 		# todo: select default value does not work
-		partVar.set("0")
+		if hasattr(dictItem,'partOfSpeech'):
+			pass
+		else:
+			dictItem.partOfSpeech = "0"
+		partVar.set(dictItem.partOfSpeech)
+
 		partsOfSpeech = [
 			("сущ","n"),
 			("прил","a"),
@@ -258,6 +267,7 @@ class Gutil:
 		
 	def statusUpdate(self,newStatus):
 		self.statusbar['text'] = newStatus
+		self.rootTk.update()
 	
 	def loadRawWordForms(self,forceLoad=False):
 		if not forceLoad and self.allFormsOperationalLoaded:
