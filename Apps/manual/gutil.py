@@ -115,7 +115,6 @@ class Gutil:
 
 		# todo: link to real value in [dictItem]: dictItem.nominal
 		nominalVar = StringVar()
-		# todo: select default value does not work
 		nominalVar.set("0")
 		nominals=[
 			("да","y"),
@@ -129,7 +128,6 @@ class Gutil:
 		partCellForm.grid(row=line,column=2)
 		# todo: link to real value in [dictItem]: dictItem.partsOfSpeech
 		partVar = StringVar()
-		# todo: select default value does not work
 		partVar.set("0")
 		partsOfSpeech = [
 			("сущ","n"),
@@ -235,7 +233,7 @@ class Gutil:
 		self.analysisMask = self._createMaskEntry(entryForm)
 		self.analysisMask.pack(side=LEFT)
 
-		# 2.5 TODO: need entry field for word length: num = exactly, num1-num2 - between num1 and num2, empty or incorrect syntax - any
+		# 2.5
 		self.lengthMask = self._createLengthEntry(entryForm)
 		self.lengthMask.pack(side=LEFT)
 

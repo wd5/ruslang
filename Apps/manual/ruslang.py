@@ -234,6 +234,11 @@ def backupFilename(filename):
 # and OperationalWordForm - attributed object, with attrs which are determined from line in Oper file
 # there can be several OperWF per key word, then can differ in pat of speach, worm, ...
 #
+# todo: redesign of operDict is needed. example: { UniqueID : OperationalWordForm() [,UID:OWF[,[...]]
+# todo: continue: and new INDEX DICTs: as example, by "sterilized word" or by "not accented word", and other forms
+# todo: continue: selection of nouns, of all LEN==2, ...
+# todo: continue: probably I need o remember/save Unique ID in operfile. (?)
+# todo: continue: probably UniqueID may be a part of attributes: refer to nominal as example.
 def LoadOperational():
 	operDict = {}
 	for line in open(ALLFORMS_OPERATIONAL_CP1251_FILE):
