@@ -121,6 +121,7 @@ def countVowels(word):
 	return vowelCnt
 
 def findAccents(word):
+	accents = []
 	vowelChars = countVowels(word)
 	if vowelChars == 0 : # only consonants in the word, no accents
 		accents = [0]
