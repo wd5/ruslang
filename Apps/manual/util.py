@@ -1,7 +1,10 @@
+# coding=cp1251
 # python utils for Russian Language project
 # Author: ustaslive
 # created : 2012-08-30
 # last modified: 2012-08-30
+
+# todo: replace all leading tabs to 4-space as per PEP-8
 
 import ruslang as rl
 
@@ -37,11 +40,12 @@ def readRawPlain2():
 			plainWordForms.add(w)
 	return plainWordForms
 
+# todo: replace all non-ascii chars with "\x, \u or \U escapes" as per PEP-8
 def duplicateYOwords(dictSet):
 	yoWords = set([])
 	for w in dictSet:
-		if '—ë' in w:
-			yoWords.add(w.replace('—ë','–µ'))
+		if '∏' in w:
+			yoWords.add(w.replace('∏','Â'))
 	dictSet.update(yoWords)
 
 def chaset(w):
@@ -158,12 +162,13 @@ def findLikesGlobal():
 # example: D is replaced with T => DATE will match TATE as well (if TATE existed)
 def soundUniform(w):
 	uw = w
-	uw = uw.replace('–±','–ø')
-	uw = uw.replace('–≥','–∫')
-	uw = uw.replace('–¥','—Ç')
-	uw = uw.replace('–∂','—à')
-	uw = uw.replace('–∑','—Å')
-	uw = uw.replace('–≤','—Ñ')
+	# todo: encode
+	uw = uw.replace('·','Ô')
+	uw = uw.replace('„','Í')
+	uw = uw.replace('‰','Ú')
+	uw = uw.replace('Ê','¯')
+	uw = uw.replace('Á','Ò')
+	uw = uw.replace('‚','Ù')
 	# to be continued: TSA = CA, CHIVO = CHEGO, NN = N, doubled consonant
 	return uw
 			

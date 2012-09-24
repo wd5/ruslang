@@ -1,7 +1,15 @@
+# coding=cp1251
 # python utils for Russian Language project
 # Author: ustaslive
 # created : 2012-08-30
 # last modified: 2012-08-30
+
+import time
+import os
+import cProfile
+import re
+
+# todo: replace all leading tabs to 4-space as per PEP-8
 
 # Russian Chars in files are in CP1521
 # common shared variables
@@ -34,30 +42,66 @@ GENERATEDFORMS_CP1251_FILE = CREATED_DATA_DIR_PATH + r"\dict_generatedforms_r1.t
 
 # all new wordforms go through this file. being manually and automatically analyzed and put to final files
 # class OperationalWordForm is saved here
+#
+# formats:
+# 1. single word - this is how new words can be added here - just copy them to the bottom,
+#		parser will recognize new word and prepare incompleteobject in memory
+#		which already can be used in programs. Parser will recognize:
+# 			- capital/small chars,
+#			- accents if they present
+#			- YO and corresponding accents
+#			- single vowel words and their accents
+#			- no-vowel words == no accents
+#			- "-" - dash in complex words
+#
+#
+# 2. words saved from OperationalWordForm. see *Dump* function, This has struture. Elements separated by #
+#		1) UniqueID for word form, number
+#			UniqueID is calcutaled once when WF is added to dict and never changed
+#		2) origional form, with Capital, Smalls, with/without accents
+#		3) word - =orig, but no accents
+#		4) sterilized word - word, but w/o all lower case, no YO - easy to search
+#		5) attributes: attr1=val1[;attr2=val2[;...]]
+#
+#
+#
+#
+
 ALLFORMS_OPERATIONAL_CP1251_FILE = CREATED_DATA_DIR_PATH + r"\dict_operational_r1.txt"	
 
-import re
-
-possiblePartsOfSpeech = {"u","a","n","av","v","pn","p","c","i","nu","pa"}
+possiblePartsOfSpeech = {
+	"u",	# unknown
+	"a",	# adjective
+	"n",	# noun
+	"av",	# adverb
+	"v",	# verb
+	"pn",	# pronoun
+	"p",	# preposition
+	"c",	# conjunction
+	"i",	# interjection, exclamation
+	"nu",	# numeral
+	"pa"	# grammatical particle
+}
 
 # Russian letters
-RUSSIAN_SMALL_LETTERS={'Ð°','Ð±','Ð²','Ð³','Ð´','Ðµ','Ñ‘','Ð¶','Ð·','Ð¸','Ð¹','Ðº','Ð»','Ð¼','Ð½','Ð¾','Ð¿','Ñ€','Ñ','Ñ‚','Ñƒ','Ñ„','Ñ…','Ñ†','Ñ‡','Ñˆ','Ñ‰','ÑŠ','Ñ‹','ÑŒ','Ñ','ÑŽ','Ñ'}
-RUSSIAN_CAPITAL_LETTERS={'Ð','Ð‘','Ð’','Ð“','Ð”','Ð•','Ð','Ð–','Ð—','Ð˜','Ð™','Ðš','Ð›','Ðœ','Ð','Ðž','ÐŸ','Ð ','Ð¡','Ð¢','Ð£','Ð¤','Ð¥','Ð¦','Ð§','Ð¨','Ð©','Ðª','Ð«','Ð¬','Ð­','Ð®','Ð¯'}
+# todo: replace all non-ascii chars with "\x, \u or \U escapes" as per PEP-8
+RUSSIAN_SMALL_LETTERS={'à','á','â','ã','ä','å','¸','æ','ç','è','é','ê','ë','ì','í','î','ï','ð','ñ','ò','ó','ô','õ','ö','÷','ø','ù','ú','û','ü','ý','þ','ÿ'}
+RUSSIAN_CAPITAL_LETTERS={'À','Á','Â','Ã','Ä','Å','¨','Æ','Ç','È','É','Ê','Ë','Ì','Í','Î','Ï','Ð','Ñ','Ò','Ó','Ô','Õ','Ö','×','Ø','Ù','Ú','Û','Ü','Ý','Þ','ß'}
 RUSSIAN_LETTERS=RUSSIAN_SMALL_LETTERS | RUSSIAN_CAPITAL_LETTERS
 
 
-RUSSIAN_SMALL_VOWELS={'Ð°','Ðµ','Ñ‘','Ð¸','Ð¾','Ñƒ','Ñ‹','Ñ','ÑŽ','Ñ'}
-RUSSIAN_CAPITAL_VOWELS={'Ð','Ð•','Ð','Ð˜','Ðž','Ð£','Ð«','Ð­','Ð®','Ð¯'}
+RUSSIAN_SMALL_VOWELS={'à','å','¸','è','î','ó','û','ý','þ','ÿ'}
+RUSSIAN_CAPITAL_VOWELS={'À','Å','¨','È','Î','Ó','Û','Ý','Þ','ß'}
 RUSSIAN_VOWELS=RUSSIAN_SMALL_VOWELS | RUSSIAN_CAPITAL_VOWELS
 
-RUSSIAN_SMALL_CONSONANTS={'Ð±','Ð²','Ð³','Ð´','Ð¶','Ð·','Ð¹','Ðº','Ð»','Ð¼','Ð½','Ð¿','Ñ€','Ñ','Ñ‚','Ñ„','Ñ…','Ñ†','Ñ‡','Ñˆ','Ñ‰','ÑŠ','ÑŒ'}
-RUSSIAN_CAPITAL_CONSONANTS={'Ð‘','Ð’','Ð“','Ð”','Ð–','Ð—','Ð™','Ðš','Ð›','Ðœ','Ð','ÐŸ','Ð ','Ð¡','Ð¢','Ð¤','Ð¥','Ð¦','Ð§','Ð¨','Ð©','Ðª','Ð¬'}
+RUSSIAN_SMALL_CONSONANTS={'á','â','ã','ä','æ','ç','é','ê','ë','ì','í','ï','ð','ñ','ò','ô','õ','ö','÷','ø','ù','ú','ü'}
+RUSSIAN_CAPITAL_CONSONANTS={'Á','Â','Ã','Ä','Æ','Ç','É','Ê','Ë','Ì','Í','Ï','Ð','Ñ','Ò','Ô','Õ','Ö','×','Ø','Ù','Ú','Ü'}
 RUSSIAN_CONSONANTS=RUSSIAN_SMALL_CONSONANTS | RUSSIAN_CAPITAL_CONSONANTS
 
-RUSSIAN_VOICED_CONSONANTS={'Ð±','Ð²','Ð³','Ð´','Ð¶','Ð·','Ð»','Ð¼','Ð½','Ñ€'}
-RUSSIAN_VOICELESS_CONSONANTS={'Ðº','Ð»','Ð¼','Ð½','Ð¿','Ñ€','Ñ','Ñ‚','Ñ„','Ñ…','Ñ†','Ñ‡','Ñˆ','Ñ‰'}
-RUSSIAN_PAIRS_VOICED_VOICELESS={'Ð±':'Ð¿','Ð²':'Ñ„','Ð³':'Ðº','Ð¶':'Ñˆ','Ð·':'Ñ'}
-RUSSIAN_PAIRS_VOICELESS_VOICED={'Ð¿':'Ð±','Ñ„':'Ð²','Ðº':'Ð³','Ñˆ':'Ð¶','Ñ':'Ð·'}
+RUSSIAN_VOICED_CONSONANTS={'á','â','ã','ä','æ','ç','ë','ì','í','ð'}
+RUSSIAN_VOICELESS_CONSONANTS={'ê','ë','ì','í','ï','ð','ñ','ò','ô','õ','ö','÷','ø','ù'}
+RUSSIAN_PAIRS_VOICED_VOICELESS={'á':'ï','â':'ô','ã':'ê','æ':'ø','ç':'ñ'}
+RUSSIAN_PAIRS_VOICELESS_VOICED={'ï':'á','ô':'â','ê':'ã','ø':'æ','ñ':'ç'}
 
 class NonExistingPartOfSpeech(Exception):
 	pass
@@ -91,7 +135,7 @@ def findAccents(word):
 			vowelIndex += 1
 	else: # multiple vowels, only marked ' and ` accents can be extracted from the word or yoYO - always accented
 		# todo: words with only YO inside can have accents in other positions, this is not being calculating now
-		word=word.replace('Ñ‘','Ñ‘\'').replace('Ð','Ð\'').replace("''","'")
+		word=word.replace('¸','¸\'').replace('¨','¨\'').replace("''","'")
 		accents = [m.start() for m in re.finditer("'",word)]
 	return accents
 
@@ -110,19 +154,21 @@ def getAttributes(attributes,options):
 	return options
 
 
-
 class OperationalWordForm:
-
 	def __init__(self,options):
 		for param in options.keys():
 			if param == "orig":
 				self.originalForm = options[param]
+			elif param == "id":
+				self.id = options[param]
 			elif param == "word":
 				self.word = options[param]
 			elif param == 'steril':
 				self.sterilizedWord = options[param]
 			elif param == 'acc':
 				self.accents = options[param]
+			elif param == 'nom':
+				self.nominal = options[param]
 			elif param == 'part':
 				self.partOfSpeech = options[param]
 			else:
@@ -130,10 +176,11 @@ class OperationalWordForm:
 
 	@classmethod
 	def fromString(cls,stringData):
-		options={}
+		options={'id':0 }
 		options['orig']=stringData.replace("`","'")
 		options['word']=notAccented(options['orig'])
-		options['steril']=options['word'][:]
+		# todo: for "steril" - YO needs to be converted to E
+		options['steril']=options['word'].lower()
 		accents = findAccents(options['orig'])
 		if accents :
 			options['acc']= accents
@@ -141,24 +188,26 @@ class OperationalWordForm:
 
 	@classmethod
 	def fromDump(cls,dumpString):
-		options={}
 		res = dumpString.split('#')
-		options['orig']=res[0]
-		if len(res)>1:
-			options['word']=res[1]
-			options['steril'] = res[1].lower()
-			if len(res)>2:
-				if res[2]:	# check for emptiness
-					getAttributes(res[2],options)
-			else:
-				pass
-		else:
-			# evidences are that this is newly added word, extracting all possible info from it
+		if len(res) == 1:
+			# new word is added, no ID, no other attributes are known now
 			return OperationalWordForm.fromString(dumpString)
+
+		# all parameters (except attributes) must present in file
+		options={}
+		options['id']=int(res[0])
+		options['orig']=res[1]
+		options['word']=res[2]
+		# todo: for "steril" - YO needs to be converted to E
+		options['steril'] = options['word'].lower()
+		if len(res)>2:
+			if res[3]:	# check for emptiness
+				getAttributes(res[3],options)
+
 		return cls(options)
 
 	def strForDump(self):
-		dumpString=self.originalForm + "#" + self.word + "#"
+		dumpString=str(self.id) + "#" + self.originalForm + "#" + self.word + "#"
 		if hasattr(self,'accents'):
 			if self.accents:
 				dumpString += "acc="+",".join(str(x) for x in self.accents)
@@ -166,60 +215,10 @@ class OperationalWordForm:
 				print ("[MAJOR] Operational::strForDump: empty accent list for word ["+self.originalForm+"]")
 		if hasattr(self,'partOfSpeech'):
 			dumpString += ";part=" + self.partOfSpeech
+		if hasattr(self,'nominal'):
+			dumpString += ";nom=" + self.nominal
 		return dumpString
 
-	def setPart(self,part):
-		if part in possiblePartsOfSpeech:
-			self.partOfSpeech=part
-		else:
-			raise NonExistingPartOfSpeech
-
-# an instance of a particular word form
-class WordForm:
-
-	def findAccents(self):
-		return [m.start() for m in re.finditer("'", self.word)]
-
-	def __init__(self,wf):
-		self.word=wf
-		self.word.replace("`","'") # normalize accent chars
-		self.accents=self.findAccents()
-		self.word = self.notAccented()
-		self.len=len(self.word)
-
-	def print(self):
-		print(self.word, self.len, self.accents)
-	def notAccented(self):
-		return self.word.replace("'","")
-
-	def equal(self,word):
-		if type(word) is str:
-			word = WordForm(word)
-		if type(word) is WordForm:
-			# type == wordForm
-			if self.len != word.len: return False
-			if self.word != word.word: return False
-			if self.accents != word.accents: return False
-			return True
-		else:
-			print("error 0001: class wordForm/equal()/unexpected type of WORD parameter")
-			return False
-
-	# prepare and retunr string which contains all attributes of the word form
-	def formatForDump(self):
-		return "not defined"
-	# load all attributes to SELF from string passed (string is taken from wordForm file
-	def loadFromDump(self,line):
-		pass
-			
-
-class InitialWordForm(WordForm):
-	def __init__(self,word,partOfSpeech=None):
-		WordForm.__init__(self,word)
-		self.partOfSpeech=partOfSpeech
-
-import time
-import os
 
 def backupFilename(filename):
 	dt = time.localtime()
@@ -241,26 +240,34 @@ def backupFilename(filename):
 # todo: continue: probably UniqueID may be a part of attributes: refer to nominal as example.
 def LoadOperational():
 	operDict = {}
+	maxID = 0
+	tempDict = []
 	for line in open(ALLFORMS_OPERATIONAL_CP1251_FILE):
 		line=line.strip('\n')
 		wf=OperationalWordForm.fromDump(line)
-		# todo: keyword is sterilized word. can match several different original forms. change ID to something "word:1" to have plain array
-		if wf.sterilizedWord in operDict.keys():
-			operDict[wf.sterilizedWord].append(wf)
+		if wf.id == 0:
+			# new words, have no ID assigned
+			tempDict.append(wf)
 		else:
-			operDict[wf.sterilizedWord] = [wf]
+			operDict[wf.id] = wf
+			if wf.id > maxID:
+				maxID = wf.id
+	newID = maxID +1
+	for dItem in tempDict:
+		dItem.id=newID
+		operDict[newID] = dItem
+		newID +=1
 	return operDict
 
 def SaveOperational(operDict):
 	# backup existing Operational File
 	os.rename(ALLFORMS_OPERATIONAL_CP1251_FILE,backupFilename(ALLFORMS_OPERATIONAL_CP1251_FILE))
 	file = open(ALLFORMS_OPERATIONAL_CP1251_FILE,"w")
-	for word in operDict.keys():
-		for operwf in operDict[word]:
-			file.write(operwf.strForDump() + '\n')
+	for id in operDict.keys():
+			file.write(operDict[id].strForDump() + '\n')
 	file.close()
 
-import cProfile
+
 def runProfiler():
 	cProfile.run('LoadOperational()','LoadOperation_profile.txt')
 

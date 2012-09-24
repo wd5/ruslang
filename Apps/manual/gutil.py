@@ -4,6 +4,8 @@
 # created : 2012-00-09
 # last modified: 2012-09-09
 
+# todo: replace all leading tabs to 4-space as per PEP-8
+
 from tkinter import *
 import ruslang
 import random
@@ -71,6 +73,7 @@ class Gutil:
 				if maxLength<minLength:
 					minLength=0
 					maxLength=0
+					# todo: where to save such strings. not in code as it may change after porting, or accident file encoding change
 					self.statusUpdate("!!! Значение поля длины слова игнорировано: max<min")
 				else:
 					self.statusUpdate("")
@@ -116,6 +119,7 @@ class Gutil:
 		# todo: link to real value in [dictItem]: dictItem.nominal
 		nominalVar = StringVar()
 		nominalVar.set("0")
+		# todo: encode
 		nominals=[
 			("да","y"),
 			("нет","n"),
@@ -129,6 +133,7 @@ class Gutil:
 		# todo: link to real value in [dictItem]: dictItem.partsOfSpeech
 		partVar = StringVar()
 		partVar.set("0")
+		# todo: encode
 		partsOfSpeech = [
 			("сущ","n"),
 			("прил","a"),
@@ -157,6 +162,7 @@ class Gutil:
 				# todo: must list not only [0] element but all matching [mask]
 				self._createTableRowFromDictItem(tableForm,self.operational[mask][0],row);	row+=1
 			else:
+				# todo: encode
 				self._createTableRow(tableForm,"слово ["+mask+"] не найдено",row);	row+=1
 			return
 
@@ -186,6 +192,7 @@ class Gutil:
 					if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
 						break
 		if row <=1 :	# only title was printed
+			# todo: encode
 			self._createTableRow(tableForm,"по шаблону ["+mask+"] ничего не найдено",0)
 
 	def _refreshWordList(self):
@@ -221,12 +228,14 @@ class Gutil:
 		self.analysisForm=Frame(self.rootTk)
 		self.analysisForm.pack(fill=BOTH,padx=10)
 
+		# todo: encode
 		Label(self.analysisForm,text="Анализ словоформ",fg="blue",anchor=W,height=2).grid(row=0,column=0,sticky=W)
 
 		entryForm = Frame(self.analysisForm)
 		entryForm.grid(row=1,column=0,columnspan=5,sticky=W)
 
 		# 1.
+		# todo: encode
 		Label(entryForm,text="Шаблон:").pack(side=LEFT)
 
 		# 2.
@@ -240,9 +249,11 @@ class Gutil:
 		# 2.6 todo: match words in dict with YO with E in mask
 
 		# 3.
+		# todo: encode
 		Button(entryForm,text="Обновить",command=self._refreshWordList).pack(side=LEFT)
 
 		# 3.5
+		# todo: encode
 		Button(entryForm,text="Встряхнуть",command=self._shuffleWordList).pack(side=LEFT)
 
 		# 4.
@@ -258,8 +269,10 @@ class Gutil:
 	def loadRawWordForms(self,forceLoad=False):
 		if not forceLoad and self.allFormsOperationalLoaded:
 			return
+		# todo: encode
 		self.statusUpdate("Загрузка необработанных словоформ... ждите")
-		self.operational = ruslang.LoadOperational() 
+		self.operational = ruslang.LoadOperational()
+		# todo: encode
 		self.statusUpdate("Необработанные словоформы загружены")
 		self.allFormsOperationalLoaded = True
 		
@@ -276,6 +289,7 @@ class Gutil:
 		menu=Menu(self.rootTk)
 		self.rootTk.config(menu=menu)
 		self.filemenu=Menu(menu)
+		# todo: encode
 		menu.add_cascade(label="Файлы",menu=self.filemenu)
 		self.filemenu.add_command(label="Открыть Недообработанные", command=self.switchToAnalyzeRawWordForms)
 		self.filemenu.add_command(label="Открыть Номиналы", command=self.dummyCallback)
