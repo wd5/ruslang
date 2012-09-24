@@ -106,7 +106,7 @@ class Gutil:
 		col=0
 		self._createColumnTitle(tableForm,"Слово",col=col); col+=1
 		self._createColumnTitle(tableForm,"Номинал",col=col); col+=1
-		self._createColumnTitle(tableForm,"Часть речи",col=col); col+=1
+		self._createColumnTitle(tableForm,"Часть речи",col=col)
 
 	def _createTableRow(self,tForm,word,line):
 		Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0,columnspan=3)
@@ -277,15 +277,20 @@ class Gutil:
 		return self.analysisForm
 		
 	def statusUpdate(self,newStatus):
-		self.statusbar['text'] = newStatus
+		self.status_bar['text'] = newStatus
 		self.rootTk.update()
-	
+
+
+
 	def loadRawWordForms(self,forceLoad=False):
 		if not forceLoad and self.allFormsOperationalLoaded:
 			return
 		# todo: encode
 		self.statusUpdate("Загрузка необработанных словоформ... ждите")
-		self.operational = ruslang.LoadOperational()
+
+		self.operational_zero = ruslang.LoadOperational()
+		self.operational = ruslang.indexed_by_sterilized(self.operational_zero)
+
 		# todo: encode
 		self.statusUpdate("Необработанные словоформы загружены")
 		self.allFormsOperationalLoaded = True
@@ -296,34 +301,34 @@ class Gutil:
 		self.currentForm = self._createAnalysisForm()
 	
 	def saveCurrentChanges(self):
-		ruslang.SaveOperational(self.operational)
+		ruslang.SaveOperational(self.operational_zero)
 
 
 	def _createMenu(self):
 		menu=Menu(self.rootTk)
 		self.rootTk.config(menu=menu)
-		self.filemenu=Menu(menu)
+		self.file_menu=Menu(menu)
 		# todo: encode
-		menu.add_cascade(label="Файлы",menu=self.filemenu)
-		self.filemenu.add_command(label="Открыть Недообработанные", command=self.switchToAnalyzeRawWordForms)
-		self.filemenu.add_command(label="Открыть Номиналы", command=self.dummyCallback)
-		self.filemenu.add_command(label="Сохранить изменения", command=self.saveCurrentChanges)
-		self.filemenu.add_command(label="Выход", command=self.quit)
+		menu.add_cascade(label="Файлы",menu=self.file_menu)
+		self.file_menu.add_command(label="Открыть Недообработанные", command=self.switchToAnalyzeRawWordForms)
+		self.file_menu.add_command(label="Открыть Номиналы", command=self.dummyCallback)
+		self.file_menu.add_command(label="Сохранить изменения", command=self.saveCurrentChanges)
+		self.file_menu.add_command(label="Выход", command=self.quit)
 		
-		self.dictmenu=Menu(menu)
-		menu.add_cascade(label="Словарь",menu=self.dictmenu)
-		self.dictmenu.add_command(label="Номиналы", command=self.dummyCallback)
-		self.dictmenu.add_command(label="Словоформы", command=self.dummyCallback)
-		self.dictmenu.add_separator()
-		self.dictmenu.add_command(label="Из файла...", command=self.dummyCallback)
+		self.dict_menu=Menu(menu)
+		menu.add_cascade(label="Словарь",menu=self.dict_menu)
+		self.dict_menu.add_command(label="Номиналы", command=self.dummyCallback)
+		self.dict_menu.add_command(label="Словоформы", command=self.dummyCallback)
+		self.dict_menu.add_separator()
+		self.dict_menu.add_command(label="Из файла...", command=self.dummyCallback)
 		
-		self.helpmenu=Menu(menu)
-		menu.add_cascade(label="Помощь",menu=self.helpmenu)
-		self.helpmenu.add_command(label="О программе...", command=self.aboutCallback)
+		self.help_menu=Menu(menu)
+		menu.add_cascade(label="Помощь",menu=self.help_menu)
+		self.help_menu.add_command(label="О программе...", command=self.aboutCallback)
 		
 	def _createStatusBar(self):
-		self.statusbar = Label(self.rootTk, text="...", bd=1, relief=SUNKEN, anchor=W)
-		self.statusbar.pack(side=BOTTOM, fill=X)
+		self.status_bar = Label(self.rootTk, text="...", bd=1, relief=SUNKEN, anchor=W)
+		self.status_bar.pack(side=BOTTOM, fill=X)
 
 	def _createInitForm(self):
 		self.initForm=Frame(self.rootTk)

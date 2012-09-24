@@ -159,13 +159,13 @@ class OperationalWordForm:
 	def __init__(self,options):
 		for param in options.keys():
 			if param == "orig":
-				self.originalForm = options[param]
+				self.original_form = options[param]
 			elif param == "id":
 				self.id = options[param]
 			elif param == "word":
 				self.word = options[param]
 			elif param == 'steril':
-				self.sterilizedWord = options[param]
+				self.sterilized_word = options[param]
 			elif param == 'acc':
 				self.accents = options[param]
 			elif param == 'nom':
@@ -208,12 +208,12 @@ class OperationalWordForm:
 		return cls(options)
 
 	def strForDump(self):
-		dumpString=str(self.id) + "#" + self.originalForm + "#" + self.word + "#"
+		dumpString=str(self.id) + "#" + self.original_form + "#" + self.word + "#"
 		if hasattr(self,'accents'):
 			if self.accents:
 				dumpString += "acc="+",".join(str(x) for x in self.accents)
 			else:
-				print ("[MAJOR] Operational::strForDump: empty accent list for word ["+self.originalForm+"]")
+				print ("[MAJOR] Operational::strForDump: empty accent list for word ["+self.original_form+"]")
 		if hasattr(self,'partOfSpeech'):
 			dumpString += ";part=" + self.partOfSpeech
 		if hasattr(self,'nominal'):
@@ -267,6 +267,17 @@ def SaveOperational(operDict):
 	for id in operDict.keys():
 			file.write(operDict[id].strForDump() + '\n')
 	file.close()
+
+def indexed_by_sterilized(operDict):
+	indexedDict = {}
+	for id in operDict.keys():
+		# todo: error NO serilized_word in operDict[id]
+		steril_word = operDict[id].sterilized_word
+		if steril_word in indexedDict.keys():
+			indexedDict[steril_word].append(operDict[id])
+		else:
+			indexedDict[steril_word] = [operDict[id]]
+	return indexedDict
 
 
 def runProfiler():
