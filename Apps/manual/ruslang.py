@@ -147,13 +147,14 @@ def getAttributes(attributes,options):
             options[attr] = val
         elif attr=="acc":
             options[attr]=[ int(num) for num in val.split(',') ]
+        elif attr == "nom":
+            options[attr] = val
         # TODO: extend number of recognized parameters
         else:
             # TODO: test non existing parameters from dict
             print ("[MAJOR] Operational::getAttributes: word [<not implemented>]: unrecognized attribute[" + attr+"] value ["+val+"]")
 
     return options
-
 
 class OperationalWordForm:
     def __init__(self,options):
@@ -209,16 +210,17 @@ class OperationalWordForm:
 
     def strForDump(self):
         dumpString=str(self.id) + "#" + self.original_form + "#" + self.word + "#"
+        attributes=[]
         if hasattr(self,'accents'):
             if self.accents:
-                dumpString += "acc="+",".join(str(x) for x in self.accents)
+                attributes.append("acc="+",".join(str(x) for x in self.accents))
             else:
                 print ("[MAJOR] Operational::strForDump: empty accent list for word ["+self.original_form+"]")
         if hasattr(self,'partOfSpeech'):
-            dumpString += ";part=" + self.partOfSpeech
+            attributes.append("part=" + self.partOfSpeech)
         if hasattr(self,'nominal'):
-            dumpString += ";nom=" + self.nominal
-        return dumpString
+            attributes.append("nom=" + self.nominal)
+        return dumpString + ';'.join(attributes)
 
 
 def backupFilename(filename):

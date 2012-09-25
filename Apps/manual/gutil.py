@@ -111,21 +111,16 @@ class Gutil:
     def _createTableRow(self,tForm,word,line):
         Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0,columnspan=3)
 
-    def _createTableRowFromDictItem(self,tForm,dictItem,line):
-        Label(tForm,text=dictItem.word,width=30,anchor=E).grid(row=line,column=0)
+    def _createNominalCell(self, tForm, dictItem):
         nominalCellForm = Frame(tForm)
-        nominalCellForm.grid(row=line,column=1)
 
         nominalVar = StringVar()
+        self.nominalVars.append(nominalVar)
         # todo: link to real value in [dictItem]: dictItem.nominal
-        if hasattr(dictItem,'nominal'):
-            pass
-        else:
+        if not hasattr(dictItem,'nominal'):
             dictItem.nominal = "0"
         nominalVar.set(dictItem.nominal)
 
-        # todo: select default value does not work
-        nominalVar.set("0")
         # todo: encode
         nominals=[
             ("да","y"),
@@ -133,17 +128,17 @@ class Gutil:
             ("?","0")
         ]
         for lbl,val in nominals:
-            rb=Radiobutton(nominalCellForm,text=lbl,variable=nominalVar,indicatoron=0, value=val)
-            rb.pack(side=LEFT)
+            Radiobutton(nominalCellForm,text=lbl,variable=nominalVar,indicatoron=0, value=val).pack(side=LEFT)
 
+        return nominalCellForm
+
+    def _createPartOfSpeechCell(self,tForm,dictItem):
         partCellForm = Frame(tForm)
-        partCellForm.grid(row=line,column=2)
         # todo: link to real value in [dictItem]: dictItem.partsOfSpeech
         partVar = StringVar()
+        self.partVars.append(partVar)
         # todo: select default value does not work
-        if hasattr(dictItem,'partOfSpeech'):
-            pass
-        else:
+        if not hasattr(dictItem,'partOfSpeech'):
             dictItem.partOfSpeech = "0"
         partVar.set(dictItem.partOfSpeech)
 
@@ -160,12 +155,23 @@ class Gutil:
             ("числ","nu"),
             ("неизв","u"),
             ("?","0")
-            ]
+        ]
         for lbl,val in partsOfSpeech:
             Radiobutton(partCellForm,text=lbl,variable=partVar,value=val,indicatoron=0,width=6).pack(side=LEFT)
 
+        return partCellForm
+
+    def _createTableRowFromDictItem(self,tForm,dictItem,line):
+
+        Label(tForm,text=dictItem.word,width=30,anchor=E).grid(row=line,column=0)
+        self._createNominalCell(tForm,dictItem).grid(row=line,column=1)
+        self._createPartOfSpeechCell(tForm,dictItem).grid(row=line,column=2)
+
+
     def _fillTable(self,tableForm, mask=DEFAULT_WORD_MASK, lengthMask="",shuffle=False):
         row=0
+        self.nominalVars = []
+        self.partVars = []
         self._createTitle(tableForm)
 
         row+=1
@@ -365,7 +371,10 @@ class Gutil:
         self._createStatusBar()
         self.currentForm=self._createInitForm()
         
-        self.allFormsOperationalLoaded = False 
+        self.allFormsOperationalLoaded = False
+
+        self.nominalVars=[]
+        self.partVars=[]
 
 
     def restoreLastState(self):
