@@ -286,6 +286,7 @@ class Gutil:
         self.lengthMask.pack(side=LEFT)
 
         # 2.6 todo: match words in dict with YO with E in mask
+        # 2.7 todo: more filters: exclude when all fields known
 
         # 3.
         # todo: encode
@@ -327,7 +328,9 @@ class Gutil:
         self.currentForm = self._createAnalysisForm()
 
     def saveCurrentChanges(self):
+        self.statusUpdate("Обновление словаря словоформ... ждите")
         ruslang.SaveOperational(self.operational_zero)
+        self.statusUpdate("Словарь обновлён")
 
 
     def _createMenu(self):
