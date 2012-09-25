@@ -111,6 +111,9 @@ class Gutil:
     def _createTableRow(self,tForm,word,line):
         Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0,columnspan=3)
 
+    def _nomCallback(self,item,var):
+        item.nominal = str(var.get())
+
     def _createNominalCell(self, tForm, dictItem):
         nominalCellForm = Frame(tForm)
 
@@ -128,9 +131,18 @@ class Gutil:
             ("?","0")
         ]
         for lbl,val in nominals:
-            Radiobutton(nominalCellForm,text=lbl,variable=nominalVar,indicatoron=0, value=val).pack(side=LEFT)
+            Radiobutton(nominalCellForm,
+                        text=lbl,
+                        variable=nominalVar,
+                        indicatoron=0,
+                        value=val,
+                        command=lambda : self._nomCallback(dictItem,nominalVar)
+            ).pack(side=LEFT)
 
         return nominalCellForm
+
+    def _partCallback(self,item,var):
+        item.partOfSpeech = str(var.get())
 
     def _createPartOfSpeechCell(self,tForm,dictItem):
         partCellForm = Frame(tForm)
@@ -157,7 +169,14 @@ class Gutil:
             ("?","0")
         ]
         for lbl,val in partsOfSpeech:
-            Radiobutton(partCellForm,text=lbl,variable=partVar,value=val,indicatoron=0,width=6).pack(side=LEFT)
+            Radiobutton(partCellForm,
+                        text=lbl,
+                        variable=partVar,
+                        value=val,
+                        indicatoron=0,
+                        width=6,
+                        command=lambda : self._partCallback(dictItem,partVar)
+                ).pack(side=LEFT)
 
         return partCellForm
 
