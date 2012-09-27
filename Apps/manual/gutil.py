@@ -115,7 +115,6 @@ class Gutil:
         Label(cell,text="subpart",bg='grey',relief=SUNKEN,bd=1).pack(side=LEFT,fill=X)
         return cell
 
-
     def _createTitle(self,tableForm):
         col=0
         self._createColumnTitle(tableForm,"Слово").grid(row=0,column=0,sticky=W+E)
@@ -127,7 +126,6 @@ class Gutil:
         self._createNominalColumnSubtitle(tableForm).grid(row=1,column=1,sticky=W+E)
         # todo: create checkAll/uncheck selection for part value - ~10 options
         self._createPartColumnSubtitle(tableForm).grid(row=1,column=2,sticky=W+E)
-
 
     def _createTableRow(self,tForm,word,line):
         Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0,columnspan=3)
