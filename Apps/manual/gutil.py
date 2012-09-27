@@ -99,14 +99,35 @@ class Gutil:
                 self.statusUpdate("!!! Значение поля длины слова игнорировано, нецифровое значение длины слова")
         return fixLength,minLength,maxLength
 
-    def _createColumnTitle(self,tForm,title,col):
-        Label(tForm,text=title,bg='grey',relief=SUNKEN,bd=1).grid(row=0,column=col,sticky=W+E)
+    def _createColumnTitle(self,tForm,title):
+        return Label(tForm,text=title,bg='grey',relief=SUNKEN,bd=1)
+
+    def _createWordColumnSubtitle(self,tForm):
+        return Label(tForm,text="dummy",bg='grey',relief=SUNKEN,bd=1)
+
+    def _createNominalColumnSubtitle(self,tForm):
+        cell=Frame(tForm)
+        Label(cell,text="su",bg='grey',relief=SUNKEN,bd=1).pack(side=LEFT,fill=X)
+        return cell
+
+    def _createPartColumnSubtitle(self,tForm):
+        cell=Frame(tForm)
+        Label(cell,text="subpart",bg='grey',relief=SUNKEN,bd=1).pack(side=LEFT,fill=X)
+        return cell
+
 
     def _createTitle(self,tableForm):
         col=0
-        self._createColumnTitle(tableForm,"Слово",col=col); col+=1
-        self._createColumnTitle(tableForm,"Номинал",col=col); col+=1
-        self._createColumnTitle(tableForm,"Часть речи",col=col)
+        self._createColumnTitle(tableForm,"Слово").grid(row=0,column=0,sticky=W+E)
+        self._createColumnTitle(tableForm,"Номинал").grid(row=0,column=1,sticky=W+E)
+        self._createColumnTitle(tableForm,"Часть речи").grid(row=0,column=2,sticky=W+E)
+
+        self._createWordColumnSubtitle(tableForm).grid(row=1,column=0,sticky=W+E)
+        # todo: create checkAll/uncheck selection for nominal value - 3 options
+        self._createNominalColumnSubtitle(tableForm).grid(row=1,column=1,sticky=W+E)
+        # todo: create checkAll/uncheck selection for part value - ~10 options
+        self._createPartColumnSubtitle(tableForm).grid(row=1,column=2,sticky=W+E)
+
 
     def _createTableRow(self,tForm,word,line):
         Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0,columnspan=3)
@@ -114,6 +135,7 @@ class Gutil:
     def _nomCallback(self,item,var):
         item.nominal = str(var.get())
 
+    # todo: merge _createNominalCell and _create*Cell to pne unoversal function with parameters
     def _createNominalCell(self, tForm, dictItem):
         nominalCellForm = Frame(tForm)
 
@@ -183,6 +205,8 @@ class Gutil:
     def _createTableRowFromDictItem(self,tForm,dictItem,line):
 
         Label(tForm,text=dictItem.word,width=30,anchor=E).grid(row=line,column=0)
+        # todo: create with button "..." "Edit details" which goes to a form for particular part of speech. can be selected only if part is choosen already
+
         self._createNominalCell(tForm,dictItem).grid(row=line,column=1)
         self._createPartOfSpeechCell(tForm,dictItem).grid(row=line,column=2)
 
@@ -193,7 +217,7 @@ class Gutil:
         self.partVars = []
         self._createTitle(tableForm)
 
-        row+=1
+        row+=2
         if ((not MASK_ANY_NUMBER_OF_CHARS in mask) and (not MASK_ANY_SINGLE_CHAR in mask)):
             # no mask special chars means exact word match. ignoring length.
             if mask in self.operational.keys():
@@ -208,26 +232,33 @@ class Gutil:
 
         # TODO: table need headers
         # TODO: table need to be dynamic: part of speech, sex if any
-        k = list(self.operational.keys())
-        kLen = len(k)
+        keywordList = list(self.operational.keys())
+        keywordListLen = len(keywordList)
         # TODO: no need to shuffle every time, expecialy when exact match is requested
-        if shuffle:
-            random.shuffle(k)
+        #if shuffle:
+        #    random.shuffle(keywordList)
 
         if mask == DEFAULT_WORD_MASK or mask == "":
             # no char mask, only LENGTH is counted
-            for i in range(0,kLen):
-                if self._passLengthCriteria(len(k[i]),fixLength,minLength,maxLength):
-                    # todo: must list not only [0] element but all matching k[i]
-                    self._createTableRowFromDictItem(tableForm,self.operational[k[i]][0],row); row += 1
+            for i in range(0,keywordListLen):
+                keyWord = keywordList[i] ;
+                if shuffle:
+                    keyWord = random.sample(keywordList,1)[0]
+                if self._passLengthCriteria(len(keyWord),fixLength,minLength,maxLength):
+                    # todo: must list not only [0] element but all matching keywordList[i]
+                    #todoo: BUG runtime error here
+                    self._createTableRowFromDictItem(tableForm,self.operational[keyWord][0],row); row += 1
                     if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
                         break
         else:
             comparator=compileCompareOperator(mask)
-            for i in range(0,kLen):
-                if self._passLengthCriteria(len(k[i]),fixLength,minLength,maxLength) and comparator.match(k[i]) :
-                    # todo: must list not only [0] element but all matching k[i]
-                    self._createTableRowFromDictItem(tableForm,self.operational[k[i]][0],row); row+=1
+            for i in range(0,keywordListLen):
+                keyWord = keywordList[i] ;
+                if shuffle:
+                    keyWord = random.sample(keywordList,1)[0]
+                if self._passLengthCriteria(len(keyWord),fixLength,minLength,maxLength) and comparator.match(keyWord) :
+                    # todo: must list not only [0] element but all matching keywordList[i]
+                    self._createTableRowFromDictItem(tableForm,self.operational[keyWord][0],row); row+=1
                     if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
                         break
         if row <=1 :    # only title was printed
@@ -301,6 +332,10 @@ class Gutil:
         self.tableForm.grid(row=2,column=0,columnspan=5)
         self._fillTable(self.tableForm)
 
+        # 5. extra functions
+        # todo: 5.1 clean up 'created" directory from temp backup files: not *_save.txt, not original filenames, all timestamped backups but last one
+        #
+
         return self.analysisForm
         
     def statusUpdate(self,newStatus):
@@ -313,9 +348,10 @@ class Gutil:
         if not forceLoad and self.allFormsOperationalLoaded:
             return
         # todo: encode
-        self.statusUpdate("Загрузка необработанных словоформ... ждите")
-
+        self.statusUpdate("Загрузка необработанных словоформ, шаг 1... ждите")
         self.operational_zero = ruslang.LoadOperational()
+
+        self.statusUpdate("Загрузка необработанных словоформ, шаг 2... ждите")
         self.operational = ruslang.indexed_by_sterilized(self.operational_zero)
 
         # todo: encode
