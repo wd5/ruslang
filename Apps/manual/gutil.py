@@ -59,6 +59,60 @@ class Gutil:
             else:
                 return False
 
+    def _passPartCriteria(self,dictItem):
+        itemPartOfSpeechValue="0"
+        if hasattr(dictItem,'partOfSpeech'):
+            itemPartOfSpeechValue = getattr(dictItem,'partOfSpeech')
+
+        filterVarName = {
+            # value in Dict DB against StringVar variable name
+            "n":"filterNounVar",    # noun
+            "a":"filterAdjectiveVar",    # adjective
+            "v":"filterVerbVar",    # verb
+            "av":"filterAdverbVar",    # adverb
+            "p":"filterPrepositionVar",    # preposition
+            "pn":"filterPronounVar",    # pronoun
+            "i":"filterInterjectionVar",    # interjection, exclamation
+            "c":"filterConjunctionVar",    # conjunction
+            "pa":"filterParticleVar",    # grammatical particle
+            "nu":"filterNumeralVar",    # numeral
+            "u":"filterUnknownPartVar",    # unknown
+            "0":"filterPartNotCheckedVar"   # not checked
+        }
+
+        if hasattr(self,filterVarName[itemPartOfSpeechValue]):
+            if getattr(self,filterVarName[itemPartOfSpeechValue]).get() == "y":
+                return True
+            else:
+                return False
+        else:
+            return True
+
+        return True
+
+    def _passNominalCriteria(self,dictItem):
+        itemNominalValue="0"
+        if hasattr(dictItem,'nominal'):
+            itemNominalValue = getattr(dictItem,'nominal')
+
+        filterVarName = {
+            # value in Dict DB against StringVar variable name
+            "y":"filterNominalYesVar",    # noun
+            "n":"filterNominalNoVar",    # adjective
+            "0":"filterNominalNotCheckedVar"   # not checked
+        }
+
+        if hasattr(self,filterVarName[itemNominalValue]):
+            if getattr(self,filterVarName[itemNominalValue]).get() == "y":
+                return True
+            else:
+                return False
+        else:
+            return True
+
+        return True
+
+
     def _parseLengthMask(self,lengthMask):
         fixLength=0
         minLength=0
@@ -102,8 +156,52 @@ class Gutil:
     def _createColumnTitle(self,tForm,title):
         return Label(tForm,text=title,bg='grey',relief=SUNKEN,bd=1)
 
-    def _createWordColumnSubtitle(self,tForm):
-        return Label(tForm,text="dummy",bg='grey',relief=SUNKEN,bd=1)
+    def _createWordColumnSubtitle(self,tForm,text):
+        return Label(tForm,text=text,bg='grey',relief=SUNKEN,bd=1)
+
+    def _createNominalFilter(self,cell,attrName,label):
+        if not hasattr(self,attrName):
+            setattr(self,attrName,StringVar())
+            getattr(self,attrName).set("y")
+        return Checkbutton(cell,text=label,variable=getattr(self,attrName),onvalue="y",offvalue="n",indicatoron=0)
+
+    def _createNominalColumnFilter(self,tForm):
+        cell=Frame(tForm)
+
+        self._createNominalFilter(cell,'filterNominalYesVar','да').pack(side=LEFT)
+        self._createNominalFilter(cell,'filterNominalNoVar','нет').pack(side=LEFT)
+        self._createNominalFilter(cell,'filterNominalNotCheckedVar','?').pack(side=LEFT)
+
+        return cell
+
+    def _createPartFilter(self,rootWidget,attrName,label):
+        if not hasattr(self,attrName):
+            setattr(self,attrName,StringVar())
+            getattr(self,attrName).set("y")
+        return Checkbutton(rootWidget,text=label,variable=getattr(self,attrName),onvalue="y",offvalue="n",indicatoron=0,width=6)
+
+    def _createPartColumnFilter(self,tForm):
+        cell=Frame(tForm)
+
+        partsOfSpeech = [
+            ("filterNounVar","сущ"),
+            ("filterAdjectiveVar","прил"),
+            ("filterVerbVar","глаг"),
+            ("filterAdverbVar","нареч"),
+            ("filterPrepositionVar","предл"),
+            ("filterPronounVar","местоим"),
+            ("filterInterjectionVar","междом"),
+            ("filterConjunctionVar","союз"),
+            ("filterParticleVar","частица"),
+            ("filterNumeralVar","числ"),
+            ("filterUnknownPartVar","неизв"),
+            ("filterPartNotCheckedVar","?")
+        ]
+
+        for p,label in partsOfSpeech:
+            self._createPartFilter(cell,p,label).pack(side=LEFT)
+
+        return cell
 
     def _createNominalColumnSubtitle(self,tForm):
         cell=Frame(tForm)
@@ -116,16 +214,25 @@ class Gutil:
         return cell
 
     def _createTitle(self,tableForm):
-        col=0
+        # text header
         self._createColumnTitle(tableForm,"Слово").grid(row=0,column=0,sticky=W+E)
         self._createColumnTitle(tableForm,"Номинал").grid(row=0,column=1,sticky=W+E)
         self._createColumnTitle(tableForm,"Часть речи").grid(row=0,column=2,sticky=W+E)
 
-        self._createWordColumnSubtitle(tableForm).grid(row=1,column=0,sticky=W+E)
+        # by column filter
+        # todo: create "by column" filter with CHECKBOXes => any check selected and match - the records is displeyed
+        # todo: noun+ verb+ adj- unknown- => display all nouns and verbs. do not display ADJ and UNKN
+        # todo: by default: all selected.
+        self._createWordColumnSubtitle(tableForm,"Фильтр =>").grid(row=1,column=0,sticky=W+E)
+        self._createNominalColumnFilter(tableForm).grid(row=1,column=1,sticky=W+E)
+        self._createPartColumnFilter(tableForm).grid(row=1,column=2,sticky=W+E)
+
+        # mass selector
+        self._createWordColumnSubtitle(tableForm,"Выбор колонки =>").grid(row=2,column=0,sticky=W+E)
         # todo: create checkAll/uncheck selection for nominal value - 3 options
-        self._createNominalColumnSubtitle(tableForm).grid(row=1,column=1,sticky=W+E)
+        self._createNominalColumnSubtitle(tableForm).grid(row=2,column=1,sticky=W+E)
         # todo: create checkAll/uncheck selection for part value - ~10 options
-        self._createPartColumnSubtitle(tableForm).grid(row=1,column=2,sticky=W+E)
+        self._createPartColumnSubtitle(tableForm).grid(row=2,column=2,sticky=W+E)
 
     def _createTableRow(self,tForm,word,line):
         Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0,columnspan=3)
@@ -215,7 +322,7 @@ class Gutil:
         self.partVars = []
         self._createTitle(tableForm)
 
-        row+=2
+        row+=3  # this number depends on the # of rows printd in _createTitle call.
         if ((not MASK_ANY_NUMBER_OF_CHARS in mask) and (not MASK_ANY_SINGLE_CHAR in mask)):
             # no mask special chars means exact word match. ignoring length.
             if mask in self.operational.keys():
@@ -236,13 +343,19 @@ class Gutil:
         #if shuffle:
         #    random.shuffle(keywordList)
 
+        statisticInfo=""
+        statCount=0
         if mask == DEFAULT_WORD_MASK or mask == "":
             # no char mask, only LENGTH is counted
             for i in range(0,keywordListLen):
-                keyWord = keywordList[i] ;
+                keyWord = keywordList[i]
+                statCount += 1
                 if shuffle:
                     keyWord = random.sample(keywordList,1)[0]
-                if self._passLengthCriteria(len(keyWord),fixLength,minLength,maxLength):
+                if (self._passLengthCriteria(len(keyWord),fixLength,minLength,maxLength) and
+                    self._passPartCriteria(self.operational[keyWord][0]) and
+                    self._passNominalCriteria(self.operational[keyWord][0])
+                    ):
                     # todo: must list not only [0] element but all matching keywordList[i]
                     #todoo: BUG runtime error here
                     self._createTableRowFromDictItem(tableForm,self.operational[keyWord][0],row); row += 1
@@ -251,17 +364,24 @@ class Gutil:
         else:
             comparator=compileCompareOperator(mask)
             for i in range(0,keywordListLen):
-                keyWord = keywordList[i] ;
+                keyWord = keywordList[i]
+                statCount += 1
                 if shuffle:
                     keyWord = random.sample(keywordList,1)[0]
-                if self._passLengthCriteria(len(keyWord),fixLength,minLength,maxLength) and comparator.match(keyWord) :
+                if (self._passLengthCriteria(len(keyWord),fixLength,minLength,maxLength) and
+                    comparator.match(keyWord) and
+                    self._passPartCriteria(self.operational[keyWord][0]) and
+                    self._passNominalCriteria(self.operational[keyWord][0])
+                    ):
                     # todo: must list not only [0] element but all matching keywordList[i]
                     self._createTableRowFromDictItem(tableForm,self.operational[keyWord][0],row); row+=1
                     if row >= GUTIL_ANALYSIS_ONSCREEN_WORDS:
                         break
         if row <=1 :    # only title was printed
             # todo: encode
-               self._createTableRow(tableForm,"по шаблону ["+mask+"] ничего не найдено",0)
+            self._createTableRow(tableForm,"по шаблону ["+mask+"] ничего не найдено",0)
+        else:
+            self.statisticUpdate("checked "+str(statCount)+" records in dictionary")
 
     def _refreshWordList(self):
         self.tableForm.destroy()
@@ -340,6 +460,9 @@ class Gutil:
         self.status_bar['text'] = newStatus
         self.rootTk.update()
 
+    def statisticUpdate(self,newStatus):
+        self.statistic_bar['text'] = newStatus
+        self.rootTk.update()
 
 
     def loadRawWordForms(self,forceLoad=False):
@@ -393,6 +516,11 @@ class Gutil:
         self.status_bar = Label(self.rootTk, text="...", bd=1, relief=SUNKEN, anchor=W)
         self.status_bar.pack(side=BOTTOM, fill=X)
 
+    def _createStatisticBar(self):
+        self.statistic_bar = Label(self.rootTk, text="...", bd=1, relief=SUNKEN, anchor=W)
+        self.statistic_bar.pack(side=BOTTOM, fill=X)
+
+
     def _createInitForm(self):
         self.initForm=Frame(self.rootTk)
         self.initForm.pack(fill=BOTH,padx=10)
@@ -425,6 +553,8 @@ class Gutil:
         self._createMenu()
         # TODO: create tool bar with icons
         self._createStatusBar()
+        self._createStatisticBar()
+
         self.currentForm=self._createInitForm()
         
         self.allFormsOperationalLoaded = False

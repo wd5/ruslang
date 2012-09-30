@@ -70,6 +70,7 @@ GENERATEDFORMS_CP1251_FILE = CREATED_DATA_DIR_PATH + r"\dict_generatedforms_r1.t
 ALLFORMS_OPERATIONAL_CP1251_FILE = CREATED_DATA_DIR_PATH + r"\dict_operational_r1.txt"
 
 possiblePartsOfSpeech = {
+    "0",    # not checked
     "u",    # unknown
     "a",    # adjective
     "n",    # noun

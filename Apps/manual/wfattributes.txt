@@ -1,3 +1,13 @@
+(see/check later project FreeLing 
+http://nlp.lsi.upc.edu/freeling/
+words attributes/cathegories
+http://nlp.lsi.upc.edu/freeling/doc/tagsets/tagset-ru.html
+
+project nltk
+book - https://sites.google.com/site/naturallanguagetoolkit/book
+
+)
+
 значение "0" у параметра означает, что по этому параметру не проверялось
 	"0" = not checked manualy
 

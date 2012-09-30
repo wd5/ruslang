@@ -18,10 +18,10 @@ TODO
 	"initial form of a word" - nominal?
 	verb - infinitive, future, past, 
 	part of speech, word class, lexical class, lexical category
-	���� = syllable
-	��������� - consonant
-	������� = vowel
-	��������� = consonant
+	 = syllable
+	 - consonant
+	 = vowel
+	 = consonant
 	
 5. 	E-YO dependent/independant operations
 6.	Capital-small dependent/independant operations
@@ -52,7 +52,8 @@ TODO
 	- a0 / a1 / a2 - unknown / accented / not accented / a3 (mix)
 	example: nominal_c1e1r1a1.txt 
 		nominal_c1e1r1a1
-28. � GUI - ��� ���� � E ���������� ������� �� �������� �� ���� �� � �. ��� ���� �������, ��� ��� .��� �����.
+28. collocations: when 2 words compraise a non(hardly)-breakabke  phrase: red wine, blue screen
+29. corpus - colection of texts
 
 # todo: 123
 
