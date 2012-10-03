@@ -203,14 +203,61 @@ class Gutil:
 
         return cell
 
-    def _createNominalColumnSubtitle(self,tForm):
+    def _nomCheckAllCallback(self):
+        newVal=self.nominalCheckAllVar.get()
+        for nomStringVar in self.nominalVars:
+            nomStringVar.set(newVal)
+        for dictItem in self.displayedDictItems:
+            dictItem.nominal = newVal
+
+    def _createNominalColumnCheckAll(self,tForm):
         cell=Frame(tForm)
-        Label(cell,text="su",bg='grey',relief=SUNKEN,bd=1).pack(side=LEFT,fill=X)
+        nominalCheckAllVar= StringVar()
+        self.nominalCheckAllVar = nominalCheckAllVar
+
+        # todo: encode
+        nominals=[
+            ("да","y"),
+            ("нет","n"),
+            ("?","0")
+        ]
+
+        for label,val in nominals:
+            Radiobutton(cell,text=label,variable=nominalCheckAllVar,indicatoron=0,value=val,command=self._nomCheckAllCallback).pack(side=LEFT)
+
         return cell
 
-    def _createPartColumnSubtitle(self,tForm):
+    def _partCheckAllCallback(self):
+        newVal=self.partCheckAllVar.get()
+        for partStringVar in self.partVars:
+            partStringVar.set(newVal)
+        for dictItem in self.displayedDictItems:
+            dictItem.partOfSpeech = newVal
+
+    def _createPartColumnCheckAll(self,tForm):
         cell=Frame(tForm)
-        Label(cell,text="subpart",bg='grey',relief=SUNKEN,bd=1).pack(side=LEFT,fill=X)
+        partCheckAllVar= StringVar()
+        self.partCheckAllVar = partCheckAllVar
+
+        # todo: encode
+        partsOfSpeech = [
+            ("сущ","n"),
+            ("прил","a"),
+            ("глаг","v"),
+            ("нареч","av"),
+            ("предл","p"),
+            ("местоим","pn"),
+            ("междом","i"),
+            ("союз","c"),
+            ("частица","pa"),
+            ("числ","nu"),
+            ("неизв","u"),
+            ("?","0")
+        ]
+
+        for label,val in partsOfSpeech:
+            Radiobutton(cell,text=label,variable=partCheckAllVar,indicatoron=0,value=val,width=6,command=self._partCheckAllCallback).pack(side=LEFT)
+
         return cell
 
     def _createTitle(self,tableForm):
@@ -230,9 +277,9 @@ class Gutil:
         # mass selector
         self._createWordColumnSubtitle(tableForm,"Выбор колонки =>").grid(row=2,column=0,sticky=W+E)
         # todo: create checkAll/uncheck selection for nominal value - 3 options
-        self._createNominalColumnSubtitle(tableForm).grid(row=2,column=1,sticky=W+E)
+        self._createNominalColumnCheckAll(tableForm).grid(row=2,column=1,sticky=W+E)
         # todo: create checkAll/uncheck selection for part value - ~10 options
-        self._createPartColumnSubtitle(tableForm).grid(row=2,column=2,sticky=W+E)
+        self._createPartColumnCheckAll(tableForm).grid(row=2,column=2,sticky=W+E)
 
     def _createTableRow(self,tForm,word,line):
         Label(tForm,text=word,width=30,anchor=E).grid(row=line,column=0,columnspan=3)
@@ -311,13 +358,14 @@ class Gutil:
 
         Label(tForm,text=dictItem.word,width=30,anchor=E).grid(row=line,column=0)
         # todo: create with button "..." "Edit details" which goes to a form for particular part of speech. can be selected only if part is choosen already
-
+        self.displayedDictItems.append(dictItem)
         self._createNominalCell(tForm,dictItem).grid(row=line,column=1)
         self._createPartOfSpeechCell(tForm,dictItem).grid(row=line,column=2)
 
 
     def _fillTable(self,tableForm, mask=DEFAULT_WORD_MASK, lengthMask="",shuffle=False):
         row=0
+        self.displayedDictItems = []
         self.nominalVars = []
         self.partVars = []
         self._createTitle(tableForm)
@@ -559,6 +607,7 @@ class Gutil:
         
         self.allFormsOperationalLoaded = False
 
+        self.displayedDictItems = []
         self.nominalVars=[]
         self.partVars=[]
 
